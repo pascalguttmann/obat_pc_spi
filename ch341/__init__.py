@@ -1,10 +1,19 @@
 from typing import Optional
-from ctypes import c_bool, c_uint8, c_int32, c_ulong, create_string_buffer, byref
+from ctypes import (
+    c_bool,
+    c_uint8,
+    c_uint32,
+    c_int32,
+    c_ulong,
+    c_void_p,
+    create_string_buffer,
+    byref,
+)
 
 import sys
 
 
-from .constants import SPI_OUTPUT_MODE_1LINE, SPI_DATA_MODE_MSB
+from .constants import SPI_CS_STATE_USED, SPI_OUTPUT_MODE_1LINE, SPI_DATA_MODE_MSB
 from .dll import load_CH341DLL as ch341dll
 from ..spi_master_base import SpiMasterBase
 
@@ -34,12 +43,14 @@ class CH341(SpiMasterBase):
 
     def _init_win(self) -> None:
         """Initializes the CH341 as spi master on windows systems"""
-        self._fd = c_int32(ch341dll.CH341OpenDevice(c_ulong(self._id)))
+        self._fd = c_int32(
+            ch341dll.CH341OpenDevice(c_ulong(self._id))  # pyright: ignore
+        )
         if self._fd.value < c_int32(0).value:
             raise OSError(f"CH341OpenDevice({self._id}) failed.")
 
         iMode = c_ulong(SPI_DATA_MODE_MSB | SPI_OUTPUT_MODE_1LINE)
-        ret = ch341dll.CH341OpenDevice(c_ulong(self._fd), iMode)
+        ret = ch341dll.CH341OpenDevice(c_ulong(self._fd), iMode)  # pyright: ignore
         if ret == c_bool(False):
             raise OSError(f"CH34xSetStream({self._fd}, {iMode}) failed.")
 
@@ -48,21 +59,27 @@ class CH341(SpiMasterBase):
     def _init_posix(self) -> None:
         """Initializes the CH341 as spi master on posix systems"""
         self._fd = c_int32(
-            ch341dll.CH341OpenDevice(create_string_buffer(self._device_path))
+            ch341dll.CH341OpenDevice(  # pyright: ignore
+                create_string_buffer(
+                    self._device_path.encode("utf-8")  # pyright: ignore
+                )
+            )
         )
         if self._fd.value < c_int32(0).value:
             raise OSError(f"CH341OpenDevice({self._device_path}) failed.")
 
         # Mandatory call to CH34x_GetChipVersion for operation of other API calls
         chip_ver: c_uint8 = c_uint8(0)
-        ret = c_bool(ch341dll.CH34x_GetChipVersion(self._fd, byref(chip_ver)))
+        ret = c_bool(
+            ch341dll.CH34x_GetChipVersion(self._fd, byref(chip_ver))  # pyright: ignore
+        )  # pyright: ignore
         if ret == c_bool(False):
             raise OSError(
                 f"CH34x_GetChipVersion({self._fd}, {byref(chip_ver)}) failed."
             )
 
         iMode = c_uint8(SPI_DATA_MODE_MSB | SPI_OUTPUT_MODE_1LINE)
-        ret = c_bool(ch341dll.CH34xSetStream(self._fd, iMode))
+        ret = c_bool(ch341dll.CH34xSetStream(self._fd, iMode))  # pyright: ignore
         if ret == c_bool(False):
             raise OSError(f"CH34xSetStream({self._fd}, {iMode}) failed.")
 
@@ -75,4 +92,30 @@ class CH341(SpiMasterBase):
         :param buf: bytearray containing bytes to be sent
         :return: bytearray containing bytes received
         """
+        if sys.platform == "win32":
+            return self._transfer_win(cs, buf)
+        else:
+            return self._transfer_posix(cs, buf)
+
+    def _transfer_win(self, cs: int, buf: bytearray) -> bytearray:
         raise NotImplementedError
+        return bytearray(0)
+
+    def _transfer_posix(self, cs: int, buf: bytearray) -> bytearray:
+        cbuf = (c_uint8 * len(buf)).from_buffer(buf)
+
+        ret = c_bool(
+            ch341dll.CH34xStreamSPIx(  # pyright: ignore
+                self._fd,
+                c_uint32(SPI_CS_STATE_USED | cs),
+                c_uint32(len(buf)),
+                byref(cbuf),
+                c_void_p(0),
+            )
+        )
+        if ret == c_bool(False):
+            raise OSError(
+                f"CH34xStreamSPIx({self._fd}, {hex(SPI_CS_STATE_USED | cs)}, {len(buf)}, {byref(cbuf)}, {c_void_p(0)}) failed."
+            )
+
+        return bytearray(cbuf)
