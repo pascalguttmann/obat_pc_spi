@@ -95,11 +95,6 @@ def load_posix(dll_name: str) -> CDLL:
     ]
 
     for func in funcs:
-        if not getattr(dll, func["name"], None):
-            name_alternative = re.sub(r"^CH341", "CH34x", func["name"])
-            f = getattr(dll, name_alternative)
-            setattr(dll, func["name"], f)  # set alias
-
         getattr(dll, func["name"]).argtypes = func["argtypes"]
         getattr(dll, func["name"]).restype = func["restype"]
 

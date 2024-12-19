@@ -70,14 +70,14 @@ class CH341(SpiMasterBase):
     def _init_posix(self) -> None:
         """Initializes the CH341 as spi master on posix systems"""
         self._fd = c_int32(
-            ch341dll.CH341OpenDevice(  # pyright: ignore
+            ch341dll.CH34xOpenDevice(  # pyright: ignore
                 create_string_buffer(
                     self._device_path.encode("utf-8")  # pyright: ignore
                 )
             )
         )
         if self._fd.value < c_int32(0).value:
-            raise OSError(f"CH341OpenDevice({self._device_path}) failed.")
+            raise OSError(f"CH34xOpenDevice({self._device_path}) failed.")
 
         # Mandatory call to CH34x_GetChipVersion for operation of other API calls
         chip_ver: c_uint8 = c_uint8(0)
