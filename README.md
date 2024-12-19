@@ -6,7 +6,7 @@ Obat Software Project for the Programmable Controller (PC) to access SPI periphe
 
 # Installation
 
-> [!note] "Administrator Privileges"
+> [!NOTE]
 > To install shared libraries and driver modules administrator privileges are required.
 > Please note, that the libraries will run with elevated privileges on your device.
 
