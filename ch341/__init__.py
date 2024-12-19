@@ -15,7 +15,7 @@ import sys
 
 
 from .constants import SPI_CS_STATE_USED, SPI_OUTPUT_MODE_1LINE, SPI_DATA_MODE_MSB
-from .dll import load_CH341DLL as ch341dll
+from .dll import ch341dll
 from ..spi_master_base import SpiMasterBase
 
 

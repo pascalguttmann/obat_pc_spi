@@ -19,7 +19,6 @@ from functools import lru_cache
 from typing import Optional
 
 
-@lru_cache(maxsize=1)
 def load_CH341DLL() -> CDLL:
     dll_name = os.getenv("CH341DLL")
     if dll_name is None:
@@ -103,3 +102,6 @@ def load_posix(dll_name: str) -> CDLL:
         getattr(dll, func["name"]).restype = func["restype"]
 
     return dll
+
+
+ch341dll = load_CH341DLL()
