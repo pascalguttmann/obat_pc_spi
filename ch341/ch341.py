@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 from ctypes import (
     c_bool,
@@ -9,10 +11,17 @@ from ctypes import (
     byref,
 )
 
+import copy
 import sys
 
 
-from ch341.constants import SPI_CS_STATE_USED, SPI_OUTPUT_MODE_1LINE, SPI_DATA_MODE_MSB
+from ch341.constants import (
+    SPI_CS_STATE_USED,
+    SPI_OUTPUT_MODE_1LINE,
+    SPI_OUTPUT_MODE_2LINE,
+    SPI_DATA_MODE_LSB,
+    SPI_DATA_MODE_MSB,
+)
 from ch341.dll import ch341dll
 from spi_master_base import SpiMasterBase
 
@@ -50,7 +59,8 @@ class CH341(SpiMasterBase):
         if self._fd.value < c_int32(0).value:
             raise OSError(f"CH341OpenDevice({self._id}) failed.")
 
-        iMode = SPI_DATA_MODE_MSB | SPI_OUTPUT_MODE_1LINE
+        # SPI_DATA_MODE_MSB Does NOT work as expected from API Doc
+        iMode = SPI_DATA_MODE_LSB | SPI_OUTPUT_MODE_1LINE
         ret = ch341dll.CH341SetStream((self._fd), iMode)  # pyright: ignore
         if ret == c_bool(False):
             raise OSError(f"CH34xSetStream({self._fd}, {iMode}) failed.")
@@ -93,13 +103,17 @@ class CH341(SpiMasterBase):
         :param buf: bytearray containing bytes to be sent
         :return: bytearray containing bytes received
         """
+
+        buf = copy.deepcopy(buf)
         if sys.platform == "win32":
             return self._transfer_win(cs, buf)
         else:
             return self._transfer_posix(cs, buf)
 
     def _transfer_win(self, cs: int, buf: bytearray) -> bytearray:
-        cbuf = (c_uint8 * len(buf)).from_buffer(buf)
+        cbuf = (c_uint8 * len(buf)).from_buffer(super().reverse_bit_order(buf))
+
+        dummy_buf = (c_uint8 * len(buf))(0)
 
         ret = c_bool(
             ch341dll.CH341StreamSPI5(  # pyright: ignore
@@ -107,7 +121,7 @@ class CH341(SpiMasterBase):
                 (SPI_CS_STATE_USED | cs),
                 (len(buf)),
                 byref(cbuf),
-                c_void_p(0),
+                byref(dummy_buf),
             )
         )
         if ret == c_bool(False):
@@ -115,7 +129,7 @@ class CH341(SpiMasterBase):
                 f"CH341StreamSPI5({self._id}, {hex(SPI_CS_STATE_USED | cs)}, {len(buf)}, {byref(cbuf)}, {c_void_p(0)}) failed."
             )
 
-        return bytearray(cbuf)
+        return super().reverse_bit_order(bytearray(cbuf))
 
     def _transfer_posix(self, cs: int, buf: bytearray) -> bytearray:
         cbuf = (c_uint8 * len(buf)).from_buffer(buf)
