@@ -4,8 +4,6 @@ from ctypes import (
     c_uint8,
     c_uint32,
     c_int32,
-    c_ulong,
-    c_ulonglong,
     c_void_p,
     create_string_buffer,
     byref,
@@ -48,14 +46,12 @@ class CH341(SpiMasterBase):
 
     def _init_win(self) -> None:
         """Initializes the CH341 as spi master on windows systems"""
-        self._fd = c_int32(
-            ch341dll.CH341OpenDevice(c_ulong(self._id))  # pyright: ignore
-        )
+        self._fd = c_int32(ch341dll.CH341OpenDevice((self._id)))
         if self._fd.value < c_int32(0).value:
             raise OSError(f"CH341OpenDevice({self._id}) failed.")
 
-        iMode = c_ulong(SPI_DATA_MODE_MSB | SPI_OUTPUT_MODE_1LINE)
-        ret = ch341dll.CH341OpenDevice(c_ulong(self._fd), iMode)  # pyright: ignore
+        iMode = SPI_DATA_MODE_MSB | SPI_OUTPUT_MODE_1LINE
+        ret = ch341dll.CH341SetStream((self._fd), iMode)  # pyright: ignore
         if ret == c_bool(False):
             raise OSError(f"CH34xSetStream({self._fd}, {iMode}) failed.")
 
@@ -107,9 +103,9 @@ class CH341(SpiMasterBase):
 
         ret = c_bool(
             ch341dll.CH341StreamSPI5(  # pyright: ignore
-                c_ulong(self._id),  # pyright: ignore
-                c_ulong(SPI_CS_STATE_USED | cs),
-                c_ulong(len(buf)),
+                (self._id),  # pyright: ignore
+                (SPI_CS_STATE_USED | cs),
+                (len(buf)),
                 byref(cbuf),
                 c_void_p(0),
             )
