@@ -1,22 +1,22 @@
-from typing import Optional
-from functools import lru_cache
+import os
+import re
+import sys
+
 from ctypes import (
-    c_uint,
-    c_void_p,
-    windll,
-    cdll,
     CDLL,
     POINTER,
     c_bool,
     c_char_p,
+    c_int32,
+    c_uint,
     c_uint8,
     c_uint32,
-    c_int32,
+    c_void_p,
+    cdll,
+    windll,
 )
-
-import sys
-import os
-import re
+from functools import lru_cache
+from typing import Optional
 
 
 @lru_cache(maxsize=1)
