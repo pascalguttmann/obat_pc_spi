@@ -59,7 +59,7 @@ class CH341(SpiMasterBase):
         if ret == c_bool(False):
             raise OSError(f"CH34xSetStream({self._fd}, {iMode}) failed.")
 
-        raise NotImplementedError
+        return
 
     def _init_posix(self) -> None:
         """Initializes the CH341 as spi master on posix systems"""
