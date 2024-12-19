@@ -31,16 +31,20 @@ class CH341(SpiMasterBase):
         """
         if sys.platform == "win32":
             if id is None:
+                self._id = 0
+            else:
                 self._id = id
-                self._fd = None
-                self._device_path = device_path
-                self._init_win()
+            self._fd = None
+            self._device_path = device_path
+            self._init_win()
         else:
             if device_path is None:
-                self._id = id
-                self._fd = None
                 self._device_path = b"/dev/ch341x_pis1"
-                self._init_posix()
+            else:
+                self._device_path = device_path
+            self._id = id
+            self._fd = None
+            self._init_posix()
 
     def _init_win(self) -> None:
         """Initializes the CH341 as spi master on windows systems"""
