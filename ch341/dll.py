@@ -65,7 +65,7 @@ def load_posix(dll_name: str) -> CDLL:
             "restype": c_bool,
         },
         {
-            "name": "CH34x_GetDeviceID",
+            "name": "CH34X_GetDeviceID",
             "argtypes": (c_int32, POINTER(c_uint32)),
             "restype": c_bool,
         },
