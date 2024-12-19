@@ -2,6 +2,9 @@ import os
 import re
 import sys
 
+if sys.platform == "win32":
+    from ctypes import windll
+
 from ctypes import (
     CDLL,
     POINTER,
@@ -13,7 +16,6 @@ from ctypes import (
     c_uint32,
     c_void_p,
     cdll,
-    windll,
 )
 from functools import lru_cache
 from typing import Optional
