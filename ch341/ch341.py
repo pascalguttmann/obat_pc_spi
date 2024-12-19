@@ -113,20 +113,17 @@ class CH341(SpiMasterBase):
     def _transfer_win(self, cs: int, buf: bytearray) -> bytearray:
         cbuf = (c_uint8 * len(buf)).from_buffer(super().reverse_bit_order(buf))
 
-        dummy_buf = (c_uint8 * len(buf))(0)
-
         ret = c_bool(
-            ch341dll.CH341StreamSPI5(  # pyright: ignore
+            ch341dll.CH341StreamSPI4(  # pyright: ignore
                 (self._id),  # pyright: ignore
                 (SPI_CS_STATE_USED | cs),
                 (len(buf)),
                 byref(cbuf),
-                byref(dummy_buf),
             )
         )
         if ret == c_bool(False):
             raise OSError(
-                f"CH341StreamSPI5({self._id}, {hex(SPI_CS_STATE_USED | cs)}, {len(buf)}, {byref(cbuf)}, {c_void_p(0)}) failed."
+                f"CH341StreamSPI4({self._id}, {hex(SPI_CS_STATE_USED | cs)}, {len(buf)}, {byref(cbuf)}) failed."
             )
 
         return super().reverse_bit_order(bytearray(cbuf))
