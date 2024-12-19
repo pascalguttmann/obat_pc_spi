@@ -1,4 +1,5 @@
 from typing import Optional
+from functools import lru_cache
 from ctypes import (
     c_uint,
     c_void_p,
@@ -18,6 +19,7 @@ import os
 import re
 
 
+@lru_cache(maxsize=1)
 def load_CH341DLL() -> CDLL:
     dll_name = os.getenv("CH341DLL")
     if dll_name is None:
