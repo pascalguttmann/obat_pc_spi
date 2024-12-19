@@ -1,5 +1,5 @@
 from typing import Optional
-from ctypes import c_bool, c_uint8, c_int32, create_string_buffer, byref
+from ctypes import c_bool, c_uint8, c_int32, c_ulong, create_string_buffer, byref
 
 import sys
 
@@ -34,6 +34,15 @@ class CH341(SpiMasterBase):
 
     def _init_win(self) -> None:
         """Initializes the CH341 as spi master on windows systems"""
+        self._fd = c_int32(ch341dll.CH341OpenDevice(c_ulong(self._id)))
+        if self._fd.value < c_int32(0).value:
+            raise OSError(f"CH341OpenDevice({self._id}) failed.")
+
+        iMode = c_ulong(SPI_DATA_MODE_MSB | SPI_OUTPUT_MODE_1LINE)
+        ret = ch341dll.CH341OpenDevice(c_ulong(self._fd), iMode)
+        if ret == c_bool(False):
+            raise OSError(f"CH34xSetStream({self._fd}, {iMode}) failed.")
+
         raise NotImplementedError
 
     def _init_posix(self) -> None:
