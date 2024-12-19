@@ -5,6 +5,7 @@ from ctypes import (
     c_uint32,
     c_int32,
     c_ulong,
+    c_ulonglong,
     c_void_p,
     create_string_buffer,
     byref,
@@ -98,8 +99,23 @@ class CH341(SpiMasterBase):
             return self._transfer_posix(cs, buf)
 
     def _transfer_win(self, cs: int, buf: bytearray) -> bytearray:
-        raise NotImplementedError
-        return bytearray(0)
+        cbuf = (c_uint8 * len(buf)).from_buffer(buf)
+
+        ret = c_bool(
+            ch341dll.CH341StreamSPI5(  # pyright: ignore
+                c_ulong(self._id),  # pyright: ignore
+                c_ulong(SPI_CS_STATE_USED | cs),
+                c_ulong(len(buf)),
+                byref(cbuf),
+                c_void_p(0),
+            )
+        )
+        if ret == c_bool(False):
+            raise OSError(
+                f"CH341StreamSPI5({self._id}, {hex(SPI_CS_STATE_USED | cs)}, {len(buf)}, {byref(cbuf)}, {c_void_p(0)}) failed."
+            )
+
+        return bytearray(cbuf)
 
     def _transfer_posix(self, cs: int, buf: bytearray) -> bytearray:
         cbuf = (c_uint8 * len(buf)).from_buffer(buf)
