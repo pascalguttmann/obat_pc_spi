@@ -78,9 +78,10 @@ class CH341(SpiMasterBase):
             raise OSError(f"CH34xOpenDevice({self._device_path}) failed.")
 
         # Mandatory call to CH34x_GetChipVersion for operation of other API calls
-        chip_ver: c_uint8 = c_uint8(0)
+
+        chip_ver = create_string_buffer(256)
         ret = c_bool(
-            ch341dll.CH34x_GetChipVersion(self._fd, byref(chip_ver))  # pyright: ignore
+            ch341dll.CH34x_GetChipVersion(self._fd, chip_ver)  # pyright: ignore
         )  # pyright: ignore
         if ret == c_bool(False):
             raise OSError(
