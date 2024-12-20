@@ -46,7 +46,7 @@ class CH341(SpiMasterBase):
             self._init_win()
         else:
             if device_path is None:
-                self._device_path = b"/dev/ch341x_pis1"
+                self._device_path = b"/dev/ch34x_pis1"
             else:
                 self._device_path = device_path
             self._id = id
@@ -71,9 +71,7 @@ class CH341(SpiMasterBase):
         """Initializes the CH341 as spi master on posix systems"""
         self._fd = c_int32(
             ch341dll.CH34xOpenDevice(  # pyright: ignore
-                create_string_buffer(
-                    self._device_path.encode("utf-8")  # pyright: ignore
-                )
+                create_string_buffer(self._device_path)  # pyright: ignore
             )
         )
         if self._fd.value < c_int32(0).value:
