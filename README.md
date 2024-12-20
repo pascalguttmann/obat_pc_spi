@@ -17,3 +17,19 @@ Obat Software Project for the Programmable Controller (PC) to access SPI periphe
 2. Copy `CH341DLLA64.DLL` (or `CH341DLL.DLL`) to directory
    `C:\Windows\System32\`. The dynamic link libraries are found in
    `driver/CH341PAR.ZIP/CH341PAR/`
+
+## Lubuntu (24.04 LTS "noble")
+
+1. Install Linux driver
+[./driver/CH341PAR_LINUX.ZIP](./driver/CH341PAR_LINUX.ZIP) and dynamic library
+
+    ```bash
+    cd ~/Documents/obat/docs/design/pc/driver/
+    sudo apt install make gcc-13
+    unzip CH341PAR_LINUX.ZIP
+    cd CH341PAR_LINUX/driver
+    sudo make install
+    ls -Fahl /dev | grep ch34 # this should display an entry "ch34x_pis*"
+    cd ../lib/x64/dynamic
+    sudo cp libch347.so /usr/lib
+    ```
