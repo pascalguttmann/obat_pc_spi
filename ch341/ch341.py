@@ -131,12 +131,11 @@ class CH341(SpiMasterBase):
         cbuf = (c_uint8 * len(buf)).from_buffer(buf)
 
         ret = c_bool(
-            ch341dll.CH34xStreamSPIx(  # pyright: ignore
+            ch341dll.CH34xStreamSPI4(  # pyright: ignore
                 self._fd,
                 c_uint32(SPI_CS_STATE_USED | cs),
                 c_uint32(len(buf)),
-                byref(cbuf),
-                c_void_p(0),
+                cbuf,
             )
         )
         if ret == c_bool(False):
