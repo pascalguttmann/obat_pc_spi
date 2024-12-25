@@ -1,0 +1,3 @@
+[submodule "python-xp-named-pipe"]
+	path = python-xp-named-pipe
+	url = ./python-xp-named-pipe/
