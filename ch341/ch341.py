@@ -30,8 +30,8 @@ class CH341(SpiMasterBase):
     def __init__(
         self, id: Optional[int] = None, device_path: Optional[str] = None
     ) -> None:
-        """Initializes the CH341 as spi master with mode 0 (CPHA = 0, CPOL = 0) with a
-        fixed clock rate of approx. 1.6 MHz
+        """Creates the CH341 object as spi master with mode 0 (CPHA = 0, CPOL =
+        0) with a fixed clock rate of approx. 1.6 MHz
 
         :param id: CH341 device number index, defaults to 0 on Windows and
         /dev/ch341_pis1 on posix systems
@@ -43,7 +43,6 @@ class CH341(SpiMasterBase):
                 self._id = id
             self._fd = None
             self._device_path = device_path
-            self._init_win()
         else:
             if device_path is None:
                 self._device_path = b"/dev/ch34x_pis1"
@@ -51,6 +50,13 @@ class CH341(SpiMasterBase):
                 self._device_path = device_path
             self._id = id
             self._fd = None
+
+    def init(self) -> None:
+        """Initializes the CH341 as spi master with mode 0 (CPHA = 0, CPOL = 0) with a
+        fixed clock rate of approx. 1.6 MHz"""
+        if sys.platform == "win32":
+            self._init_win()
+        else:
             self._init_posix()
 
     def _init_win(self) -> None:

@@ -5,6 +5,10 @@ from typing import TypeVar
 class SpiMasterBase(ABC):
     @abstractmethod
     def __init__(self, *args, **kwargs) -> None:
+        """Initialize the SPI bus master object"""
+
+    @abstractmethod
+    def init(self) -> None:
         """Initialize the SPI bus master to allow data transfer to slave devices"""
 
     @abstractmethod

@@ -61,7 +61,14 @@ Supported USB-to-SPI bridges:
    $ sudo python3 ch341_demo.py BADC0DED
    TX: 0xbadc0ded
    RX: 0xffffffff # received may vary depending on MISO connection
-   ```
+
+> [!NOTE]
+> `Sudo` is required to access the kernel device (e.g. `/dev/ch34x_pis1`). To
+> avoid running the entire process with elevated privileges you can set the
+> owner and group of the device used for communication to your user: `sudo
+> chown obat:obat /dev/ch34x_pis1`
+
+```
 
 # SPI Parameters
 

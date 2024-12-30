@@ -1,0 +1,3 @@
+[submodule "python_xp_named_pipe"]
+	path = python_xp_named_pipe
+	url = https://github.com/pascalguttmann/python_xp_named_pipe.git
