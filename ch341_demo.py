@@ -4,8 +4,8 @@ from ch341.ch341 import CH341
 
 
 def hex_to_bytearray(hex_string):
-    bytes_object = bytes.fromhex(hex_string)
-    bytearray_object = bytearray(bytes_object)
+    bytearray_object = bytearray.fromhex(hex_string)
+    bytearray_object = bytearray(bytearray_object)
     return bytearray_object
 
 

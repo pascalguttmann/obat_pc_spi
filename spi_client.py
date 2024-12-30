@@ -26,14 +26,14 @@ if __name__ == "__main__":
     from spi_server import SpiServer
     from ch341.ch341 import CH341
 
-    def hex_string_to_bytes(hex_string):
+    def hex_string_to_bytearray(hex_string):
         if hex_string.startswith("0x"):
             hex_string = hex_string[2:]
 
         if len(hex_string) % 2 != 0:
             hex_string = "0" + hex_string
 
-        return bytes.fromhex(hex_string)
+        return bytearray.fromhex(hex_string)
 
     with SpiServer(CH341()) as spi_server:
         with client_write_pipe_end:
@@ -47,12 +47,12 @@ if __name__ == "__main__":
                         if user_input.lower() == "exit":
                             print("Exiting program.")
                             break
-                        tx_bytes = hex_string_to_bytes(user_input)
+                        tx_bytearray = hex_string_to_bytearray(user_input)
 
-                        ipc.write(pack_server_command(cs, tx_bytes))
-                        rx_bytes = unpack_server_response(ipc.read())
+                        ipc.write(pack_server_command(cs, tx_bytearray))
+                        rx_bytearray = unpack_server_response(ipc.read())
 
-                        print(f"TX: {tx_bytes.hex()}, RX: {rx_bytes.hex()}")
+                        print(f"TX: {tx_bytearray.hex()}, RX: {rx_bytearray.hex()}")
 
                 except KeyboardInterrupt:
                     print("SIGINT: Exiting program.")

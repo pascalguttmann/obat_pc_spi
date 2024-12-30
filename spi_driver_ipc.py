@@ -25,17 +25,17 @@ b64_server_ipc = B64(
 )
 
 
-def pack_server_command(cs: int, buf: bytes) -> bytes:
-    return bytes(cs.to_bytes(1, "big", signed=False) + buf)
+def pack_server_command(cs: int, buf: bytearray) -> bytearray:
+    return bytearray(cs.to_bytes(1, "big", signed=False) + buf)
 
 
-def unpack_server_command(cmd: bytes) -> Tuple[int, bytes]:
+def unpack_server_command(cmd: bytearray) -> Tuple[int, bytearray]:
     return cmd[0], cmd[1:]
 
 
-def pack_server_response(buf: bytes) -> bytes:
+def pack_server_response(buf: bytearray) -> bytearray:
     return buf
 
 
-def unpack_server_response(response: bytes) -> bytes:
+def unpack_server_response(response: bytearray) -> bytearray:
     return response
