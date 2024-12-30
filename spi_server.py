@@ -12,7 +12,6 @@ from spi_master_base import SpiMasterBase
 import multiprocessing
 import signal
 import os
-import time
 
 
 class SpiServer:
@@ -51,14 +50,11 @@ class SpiServer:
     def run(self):
         try:
             while True:
-                print("Server attempting to read.")
                 ipc_read = ipc.read()
-                print("Server finished to read.")
-                print(f"SpiServer: {ipc_read=}")
                 cs, spi_tx = unpack_server_command(ipc_read)
                 spi_rx = self._spi_master.transfer(cs, spi_tx)
                 ipc.write(pack_server_response(spi_rx))
-                print(f"SpiServer {cs=}, {spi_tx=}, {spi_rx=}\n")
+                print(f"SpiServer: {cs=}, {spi_tx=}, {spi_rx=}\n")
 
         except KeyboardInterrupt:
             print("SpiServer: SIGINT")
