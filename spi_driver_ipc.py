@@ -5,8 +5,8 @@ from python_xp_named_pipe.base64_encoder_decoder import (
 
 from typing import Tuple
 
-client_to_server_pipe: NamedPipe = NamedPipe("./ipc/client_to_server")
-server_to_client_pipe: NamedPipe = NamedPipe("./ipc/server_to_client")
+client_to_server_pipe: NamedPipe = NamedPipe("./client_to_server")
+server_to_client_pipe: NamedPipe = NamedPipe("./server_to_client")
 
 client_read_pipe_end = ReadPipeEnd(server_to_client_pipe)
 client_write_pipe_end = WritePipeEnd(client_to_server_pipe)
