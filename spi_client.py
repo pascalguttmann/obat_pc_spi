@@ -11,7 +11,7 @@ from spi_driver_ipc import (
     unpack_server_response,
 )
 from spi_server import SpiServer
-from obat_pc_spi_driver.spi_elements.spi_element_base import SpiElement
+from spi_elements.spi_element_base import SpiElement
 
 
 class SpiChannel:
