@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from multiprocessing import Value
 from typing import Optional, List, TypeVar
 
 from queue import Queue, Empty, Full
@@ -44,6 +45,19 @@ class SpiElementBase(ABC):
                 name == sub._name or sub._name_in_sub_elements(name)
                 for sub in self._spi_element_childs
             )
+
+    def get_spi_element_by_name(self, name: str) -> SpiElementBase:
+        if name == self._name:
+            return self
+        else:
+            if self._spi_element_childs:
+                for sub in self._spi_element_childs:
+                    try:
+                        return sub.get_spi_element_by_name(name)
+                    except ValueError:
+                        continue
+
+        raise ValueError(f"Name: '{name}' not found for SpiElement: {self}")
 
     def get_unprocessed_operation(self) -> SingleTransferOperation:
         """Get the next operation as an bitarray, that should be written to the
