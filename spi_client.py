@@ -5,15 +5,12 @@ from bitarray import bitarray
 
 from spi_driver_ipc import (
     b64_client_ipc as ipc,
-    client_to_server_pipe,
-    server_to_client_pipe,
     client_read_pipe_end,
     client_write_pipe_end,
     pack_server_command,
     unpack_server_response,
 )
 from spi_server import SpiServer
-from obat_pc_spi_driver.spi_master_base import SpiMasterBase
 from obat_pc_spi_driver.spi_elements.spi_element_base import SpiElement
 
 
@@ -45,6 +42,7 @@ class SpiClient:
                 )
                 for spi_channel in self._spi_channels
             ]
+            self._spi_channel_threads_run_flag = False
         self._spi_server = spi_server
         self._spi_server.start_server_process()
         client_write_pipe_end.open()
@@ -58,12 +56,22 @@ class SpiClient:
     def get_spi_server(self) -> SpiServer:
         return self._spi_server
 
+    def start_cyclic_spi_channel_transfer(self) -> None:
+        self._spi_channel_threads_run_flag = True
+        for ch in self._spi_channel_threads:
+            ch.start()
+
+    def stop_cyclic_spi_channel_transfer(self) -> None:
+        self._spi_channel_threads_run_flag = False
+        for ch in self._spi_channel_threads:
+            ch.join()
+
     def _create_cyclic_locking_thread(
         self, func: Callable[[], None], interval: float
     ) -> threading.Thread:
         def cyclic_locking_wrapper():
             last_time = time.perf_counter()
-            while True:
+            while self._spi_channel_threads_run_flag:
                 with self._spi_server_lock:
                     func()
                 current_time = time.perf_counter()
