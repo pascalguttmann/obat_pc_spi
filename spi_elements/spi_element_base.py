@@ -10,7 +10,6 @@ from operation import SingleTransferOperation
 
 
 class SpiElementBase(ABC):
-    @abstractmethod
     def __init__(
         self,
         name: Optional[str],
