@@ -20,6 +20,9 @@ class SingleTransferOperation:
     def __len__(self) -> int:
         return len(self.get_command())
 
+    def __repr__(self) -> str:
+        return f"SingleTransferOperation: command={self._command}, response={self._response}, response_required={self._response_required}"
+
     def set_response(self, response: bitarray) -> None:
         if not self._response_required:
             raise ValueError("operation does not require a response.")
