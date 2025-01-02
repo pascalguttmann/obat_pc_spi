@@ -24,7 +24,7 @@ if __name__ == "__main__":
         unpack_server_response,
     )
     from spi_server import SpiServer
-    from ch341.ch341 import CH341
+    from spi_master.ch341.ch341 import CH341
 
     def hex_string_to_bytearray(hex_string):
         if hex_string.startswith("0x"):

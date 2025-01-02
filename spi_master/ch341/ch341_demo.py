@@ -1,6 +1,6 @@
 import sys
 
-from ch341.ch341 import CH341
+from ch341 import CH341
 
 
 def hex_to_bytearray(hex_string):
