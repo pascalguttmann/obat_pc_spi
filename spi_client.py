@@ -96,8 +96,7 @@ class SpiClient:
         rx_bytearray = self._read_from_spi_server()
 
         if op.get_response_required():
-            rsp = bitarray(len(op))
-            rsp.frombytes(bytes(rx_bytearray))
+            rsp = bitarray("".join(format(byte, "08b") for byte in rx_bytearray))
             op.set_response(rsp)
         else:
             _ = rx_bytearray
