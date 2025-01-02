@@ -7,7 +7,7 @@ class SingleTransferOperation:
     def __init__(
         self,
         command: bitarray,
-        response: Optional[bitarray],
+        response: Optional[bitarray] = None,
         response_required: bool = True,
     ) -> None:
         self._command = command
