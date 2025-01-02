@@ -35,6 +35,13 @@ class SpiServer:
         if self._subprocess:
             os.kill(self._subprocess.pid, signal.SIGINT)
             self._subprocess.join()
+            self._subprocess = None
+
+    def server_process_running(self) -> bool:
+        if self._subprocess:
+            return True
+        else:
+            return False
 
     def setup(self):
         with client_to_server_pipe:
