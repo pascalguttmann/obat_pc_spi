@@ -20,8 +20,8 @@ class SpiElementBase(ABC):
     ) -> None:
         """Initialize the SPI bus master object"""
         self._set_spi_element_childs(spi_element_childs)
-        self._operation_commands = Queue()
-        self._operation_response = Queue()
+        self._operation_unprocessed = Queue()
+        self._operation_processed = Queue()
         self._set_name(name)
 
     def _set_spi_element_childs(
@@ -59,25 +59,25 @@ class SpiElementBase(ABC):
 
         raise ValueError(f"Name: '{name}' not found for SpiElement: {self}")
 
-    def get_unprocessed_operation(self) -> SingleTransferOperation:
-        """Get the next operation as an bitarray, that should be written to the
-        physical SpiElement
+    def pop_unprocessed_operation(self) -> SingleTransferOperation:
+        """Pop the next operation as an bitarray, that should be written to the
+        physical SpiElement from the fifo of unprocessed operations.
 
         :return: operation containing the operation in binary format (MSB first)
         """
         try:
-            return self._operation_commands.get_nowait()
+            return self._operation_unprocessed.get_nowait()
         except Empty:
             return self._get_default_operation_command()
 
     def put_processed_operation(self, operation: SingleTransferOperation) -> None:
-        """Set the operations response as an bitarray, after the physical
-        SpiElement responded.
+        """Put the operations response as an bitarray, after the physical
+        SpiElement responded to the fifo of processed operations.
 
         :param response: Operation containing the operation response in binary
         format (MSB first)
         """
-        return self._operation_response.put_nowait(operation)
+        return self._operation_processed.put_nowait(operation)
 
     @abstractmethod
     def _get_default_operation_command(self) -> SingleTransferOperation:
