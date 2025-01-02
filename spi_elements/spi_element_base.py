@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import TypeVar
+from typing import Optional, List, TypeVar
 
 from queue import Queue, Empty, Full
 
@@ -8,10 +10,40 @@ from operation import SingleTransferOperation
 
 class SpiElementBase(ABC):
     @abstractmethod
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        name: Optional[str],
+        spi_element_childs: Optional[List[SpiElementBase]],
+        *args,
+        **kwargs,
+    ) -> None:
         """Initialize the SPI bus master object"""
+        self._set_spi_element_childs(spi_element_childs)
         self._operation_commands = Queue()
         self._operation_response = Queue()
+        self._set_name(name)
+
+    def _set_spi_element_childs(
+        self, spi_element_childs: Optional[List[SpiElementBase]]
+    ) -> None:
+        self._spi_element_childs = spi_element_childs
+
+    def _set_name(self, name: Optional[str]) -> None:
+        if name and not self._name_in_sub_elements(name):
+            self._name = name
+        else:
+            raise ValueError(
+                f"Name {name} of SpiElement is not unique among child SpiElement."
+            )
+
+    def _name_in_sub_elements(self, name: str) -> bool:
+        if not self._spi_element_childs:
+            return False
+        else:
+            return any(
+                name == sub._name or sub._name_in_sub_elements(name)
+                for sub in self._spi_element_childs
+            )
 
     def get_unprocessed_operation(self) -> SingleTransferOperation:
         """Get the next operation as an bitarray, that should be written to the
