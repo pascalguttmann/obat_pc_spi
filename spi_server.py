@@ -7,7 +7,7 @@ from spi_driver_ipc import (
     pack_server_response,
     unpack_server_command,
 )
-from spi_master_base import SpiMasterBase
+from spi_master.spi_master_base import SpiMasterBase
 
 import multiprocessing
 import signal
