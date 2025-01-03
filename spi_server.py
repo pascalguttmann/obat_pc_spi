@@ -24,6 +24,7 @@ class SpiServer:
         return self.start_server_process()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        _, _, _ = exc_type, exc_val, exc_tb
         return self.stop_server_process()
 
     def start_server_process(self):
@@ -33,7 +34,10 @@ class SpiServer:
 
     def stop_server_process(self):
         if self._subprocess:
-            os.kill(self._subprocess.pid, signal.SIGINT)
+            os.kill(
+                self._subprocess.pid,  # pyright: ignore[reportArgumentType]
+                signal.SIGINT,
+            )
             self._subprocess.join()
             self._subprocess = None
 

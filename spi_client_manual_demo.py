@@ -16,8 +16,6 @@ if __name__ == "__main__":
 
     from spi_driver_ipc import (
         b64_client_ipc as ipc,
-        client_to_server_pipe,
-        server_to_client_pipe,
         client_read_pipe_end,
         client_write_pipe_end,
         pack_server_command,

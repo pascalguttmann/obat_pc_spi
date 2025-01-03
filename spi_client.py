@@ -11,12 +11,12 @@ from spi_driver_ipc import (
     unpack_server_response,
 )
 from spi_server import SpiServer
-from spi_elements.spi_element_base import SpiElement
+from spi_elements.spi_element_base import SpiElementBase
 
 
 class SpiChannel:
     def __init__(
-        self, spi_element: SpiElement, transfer_interval: float, cs: int
+        self, spi_element: SpiElementBase, transfer_interval: float, cs: int
     ) -> None:
         self.spi_element = spi_element
         self.transfer_interval = transfer_interval
