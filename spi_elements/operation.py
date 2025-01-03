@@ -1,5 +1,5 @@
 from bitarray import bitarray
-from typing import Optional
+from typing import Optional, Any
 
 
 class SingleTransferOperation:
@@ -15,6 +15,12 @@ class SingleTransferOperation:
             self.set_response(response)
         else:
             self._response = None
+
+    def _parse_response(self, rsp: bitarray) -> Any:
+        """This method is used to parse the response of type bitarray into the
+        desired datatype, which is appropriate for the SingleTransferOperation."""
+        _ = rsp
+        raise NotImplementedError("SingleTransferOperation does not implement")
 
     def __len__(self) -> int:
         return len(self.get_command())
@@ -33,6 +39,12 @@ class SingleTransferOperation:
 
     def get_response(self) -> Optional[bitarray]:
         return self._response
+
+    def get_parsed_response(self) -> Any:
+        rsp = self.get_response()
+        if not rsp:
+            raise ValueError("SingleTransferOperation does not have a response.")
+        return self._parse_response(rsp)
 
     def get_command(self) -> bitarray:
         return self._command
