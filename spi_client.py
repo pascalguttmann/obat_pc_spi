@@ -80,7 +80,7 @@ class SpiClient:
                     time.sleep(sleep_time)
                 last_time = current_time
 
-        return threading.Thread(target=cyclic_locking_wrapper)
+        return threading.Thread(target=cyclic_locking_wrapper, daemon=True)
 
     def _write_to_spi_server(self, cs: int, buf: bytearray) -> None:
         return ipc.write(pack_server_command(cs, buf))
