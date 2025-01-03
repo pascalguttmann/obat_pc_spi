@@ -3,7 +3,7 @@ import time
 
 from spi_client import SpiClient, SpiChannel
 from spi_server import SpiServer
-from spi_master.ch341.ch341 import CH341
+from spi_master.virtual.virtual import Virtual
 
 from spi_elements.spi_element_base import SpiElementBase
 from spi_elements.operation import SingleTransferOperation
@@ -19,7 +19,7 @@ class TestSpiElement(SpiElementBase):
 
 class TestSpiClient(unittest.TestCase):
     def test_spi_client_init(self):
-        server = SpiServer(CH341())
+        server = SpiServer(Virtual())
         spi_element = TestSpiElement(name="test spi element", spi_element_childs=None)
         spi_channels = [
             SpiChannel(spi_element=spi_element, transfer_interval=0.1, cs=0)
