@@ -1,8 +1,10 @@
 from bitarray import bitarray
 from typing import Optional, Any
 
+from operation_base import OperationBase
 
-class SingleTransferOperation:
+
+class SingleTransferOperation(OperationBase):
     def __init__(
         self,
         command: bitarray,
