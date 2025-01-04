@@ -25,6 +25,11 @@ class SingleTransferOperation(OperationBase):
         raise NotImplementedError("SingleTransferOperation does not implement")
 
     def __len__(self) -> int:
+        """Returns the number of spi transfers required to process this operation."""
+        return 1
+
+    def get_bitlength(self) -> int:
+        """Returns the bitlength of the SingleTransferOperation."""
         return len(self.get_command())
 
     def __repr__(self) -> str:

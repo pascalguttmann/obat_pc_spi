@@ -11,7 +11,17 @@ class OperationBase(ABC):
 
         Must be implemented by child class.
         """
-        pass
+
+    @abstractmethod
+    def __repr__(self) -> str:
+        """Return a str to represent the object instance for printing.
+
+        Must be implemented by child class.
+        """
+
+    @abstractmethod
+    def __len__(self) -> int:
+        """Returns the number of spi transfers required to process this operation."""
 
 
 Operation = TypeVar("Operation", bound=OperationBase)

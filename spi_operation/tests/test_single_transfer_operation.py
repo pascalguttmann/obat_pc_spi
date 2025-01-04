@@ -13,7 +13,7 @@ class TestSingleTransferOperation(unittest.TestCase):
 
     def test_operation_init_001(self):
         op = SingleTransferOperation(self.op_cmd_10_bit)
-        self.assertEqual(len(op), len(self.op_cmd_10_bit))
+        self.assertEqual(op.get_bitlength(), len(self.op_cmd_10_bit))
         self.assertEqual(op._command, self.op_cmd_10_bit)
         self.assertEqual(op._response, None)
         self.assertEqual(op._response_required, True)
@@ -21,7 +21,7 @@ class TestSingleTransferOperation(unittest.TestCase):
 
     def test_operation_init_002(self):
         op = SingleTransferOperation(self.op_cmd_10_bit, response_required=False)
-        self.assertEqual(len(op), len(self.op_cmd_10_bit))
+        self.assertEqual(op.get_bitlength(), len(self.op_cmd_10_bit))
         self.assertEqual(op._command, self.op_cmd_10_bit)
         self.assertEqual(op._response, None)
         self.assertEqual(op._response_required, False)
@@ -31,7 +31,7 @@ class TestSingleTransferOperation(unittest.TestCase):
         op = SingleTransferOperation(
             self.op_cmd_10_bit, self.op_rsp_10_bit, response_required=True
         )
-        self.assertEqual(len(op), len(self.op_cmd_10_bit))
+        self.assertEqual(op.get_bitlength(), len(self.op_cmd_10_bit))
         self.assertEqual(op._command, self.op_cmd_10_bit)
         self.assertEqual(op._response, self.op_rsp_10_bit)
         self.assertEqual(op._response_required, True)
@@ -68,7 +68,7 @@ class TestSingleTransferOperation(unittest.TestCase):
     def test_operation_set_response_003(self):
         op = SingleTransferOperation(self.op_cmd_10_bit)
         op.set_response(self.op_rsp_10_bit)
-        self.assertEqual(len(op), len(self.op_cmd_10_bit))
+        self.assertEqual(op.get_bitlength(), len(self.op_cmd_10_bit))
         self.assertEqual(op._command, self.op_cmd_10_bit)
         self.assertEqual(op._response, self.op_rsp_10_bit)
         self.assertEqual(op._response_required, True)
