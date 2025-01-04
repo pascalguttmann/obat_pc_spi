@@ -3,7 +3,7 @@ import unittest
 from bitarray import bitarray
 from typing import Optional
 
-from operation import SingleTransferOperation
+from single_transfer_operation import SingleTransferOperation
 
 
 class TestSingleTransferOperation(unittest.TestCase):

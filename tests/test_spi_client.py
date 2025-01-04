@@ -6,7 +6,7 @@ from spi_server import SpiServer
 from spi_master.virtual.virtual import Virtual
 
 from spi_elements.spi_element_base import SpiElementBase
-from spi_operation.operation import SingleTransferOperation
+from spi_operation.single_transfer_operation import SingleTransferOperation
 from bitarray import bitarray
 
 

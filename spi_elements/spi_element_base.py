@@ -6,7 +6,7 @@ from typing import Optional, List, TypeVar
 
 from queue import Queue, Empty, Full
 
-from spi_operation.operation import SingleTransferOperation
+from spi_operation.single_transfer_operation import SingleTransferOperation
 
 
 class SpiElementBase(ABC):
