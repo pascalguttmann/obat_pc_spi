@@ -8,7 +8,7 @@ from spi_master.virtual.virtual import Virtual
 from spi_elements.spi_element_base import SpiElementBase, SingleTransferOperationRequest
 from bitarray import bitarray
 
-from obat_pc_spi_driver.spi_operation import SingleTransferOperation
+from spi_operation import SingleTransferOperation
 
 
 class TestSpiElement(SpiElementBase):
