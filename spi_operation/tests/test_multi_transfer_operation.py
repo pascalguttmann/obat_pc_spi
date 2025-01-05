@@ -57,3 +57,38 @@ class TestMultiTransferOperation(unittest.TestCase):
         self.assertEqual(op, op_eq)
         self.assertIsNot(op, op_neq)
         self.assertNotEqual(op, op_neq)
+
+    def test_get_single_transfer_operations_001(self):
+        multi_op = MultiTransferOperation([self.single_op])
+        list_op = multi_op.get_single_transfer_operations()
+        self.assertIsInstance(list_op, list)
+        self.assertEqual(len(list_op), 1)
+        self.assertIsInstance(list_op[0], SingleTransferOperation)
+        self.assertIsNot(list_op[0], self.single_op)
+        self.assertEqual(list_op[0], self.single_op)
+
+    def test_get_single_transfer_operations_002(self):
+        multi_op = MultiTransferOperation(
+            [
+                self.single_op,
+                MultiTransferOperation(
+                    [
+                        self.single_op,
+                        self.single_op,
+                        MultiTransferOperation(
+                            [
+                                self.single_op,
+                            ]
+                        ),
+                    ]
+                ),
+                self.single_op,
+            ]
+        )
+        list_op = multi_op.get_single_transfer_operations()
+        self.assertIsInstance(list_op, list)
+        self.assertEqual(len(list_op), len(multi_op))
+        for single_op in list_op:
+            self.assertIsInstance(single_op, SingleTransferOperation)
+            self.assertIsNot(single_op, self.single_op)
+            self.assertEqual(single_op, self.single_op)

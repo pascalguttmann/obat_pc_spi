@@ -98,3 +98,10 @@ class TestSingleTransferOperation(unittest.TestCase):
         self.assertIsNot(op, op_neq)
         self.assertNotEqual(op, op_neq)
 
+    def test_get_single_transfer_operations(self):
+        op = SingleTransferOperation(self.op_cmd_10_bit, self.op_rsp_10_bit)
+        list_op = op.get_single_transfer_operations()
+        self.assertIsInstance(list_op, list)
+        self.assertEqual(len(list_op), 1)
+        self.assertIsInstance(list_op[0], SingleTransferOperation)
+        self.assertIs(list_op[0], op)

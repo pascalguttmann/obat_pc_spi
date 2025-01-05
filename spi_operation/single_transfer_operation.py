@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bitarray import bitarray
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 from operation_base import OperationBase
 
@@ -71,3 +71,6 @@ class SingleTransferOperation(OperationBase):
 
     def get_response_required(self) -> bool:
         return self._response_required
+
+    def get_single_transfer_operations(self) -> List[SingleTransferOperation]:
+        return [self]

@@ -3,6 +3,7 @@ from copy import deepcopy
 from typing import Optional, List
 
 from operation_base import OperationBase
+from single_transfer_operation import SingleTransferOperation
 
 
 class MultiTransferOperation(OperationBase):
@@ -26,3 +27,7 @@ class MultiTransferOperation(OperationBase):
             return True
         else:
             return False
+
+    def get_single_transfer_operations(self) -> List[SingleTransferOperation]:
+        list_list_op = [op.get_single_transfer_operations() for op in self._operations]
+        return [op for list_op in list_list_op for op in list_op]
