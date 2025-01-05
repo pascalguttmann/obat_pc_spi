@@ -5,15 +5,19 @@ from spi_client import SpiClient, SpiChannel
 from spi_server import SpiServer
 from spi_master.virtual.virtual import Virtual
 
-from spi_elements.spi_element_base import SpiElementBase
-from spi_operation.single_transfer_operation import SingleTransferOperation
+from spi_elements.spi_element_base import SpiElementBase, SingleTransferOperationRequest
 from bitarray import bitarray
+
+from obat_pc_spi_driver.spi_operation import SingleTransferOperation
 
 
 class TestSpiElement(SpiElementBase):
-    def _get_default_operation_command(self) -> SingleTransferOperation:
-        return SingleTransferOperation(
-            bitarray("1111000011001100"), response_required=True
+    def _get_default_operation_request(self) -> SingleTransferOperationRequest:
+        return SingleTransferOperationRequest(
+            SingleTransferOperation(
+                bitarray("1111000011001100"), response_required=True
+            ),
+            callback=None,
         )
 
 

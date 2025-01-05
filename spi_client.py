@@ -14,6 +14,7 @@ from spi_server import SpiServer
 from spi_elements.spi_element_base import SpiElementBase
 
 
+# TODO: Change to Dataclass:
 class SpiChannel:
     def __init__(
         self, spi_element: SpiElementBase, transfer_interval: float, cs: int
@@ -89,14 +90,19 @@ class SpiClient:
         return unpack_server_response(ipc.read())
 
     def _transfer_spi_channel(self, spi_channel: SpiChannel) -> None:
-        op = spi_channel.spi_element.pop_unprocessed_operation()
-        tx_bytearray = bytearray(op.get_command().tobytes())
+        op_req = spi_channel.spi_element.pop_unprocessed_operation_request()
+        tx_bytearray = bytearray(op_req.operation.get_command().tobytes())
 
         self._write_to_spi_server(spi_channel.cs, tx_bytearray)
         rx_bytearray = self._read_from_spi_server()
 
-        if op.get_response_required():
+        if op_req.operation.get_response_required():
             rsp = bitarray("".join(format(byte, "08b") for byte in rx_bytearray))
-            op.set_response(rsp)
+            op_req.operation.set_response(rsp)
         else:
             _ = rx_bytearray
+
+        if op_req.callback:
+            op_req.callback()
+
+        return

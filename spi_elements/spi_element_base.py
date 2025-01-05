@@ -1,11 +1,18 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional, List, TypeVar
+from typing import Callable, Optional, List, TypeVar
+from dataclasses import dataclass
 
 from queue import Queue, Empty
 
 from spi_operation.single_transfer_operation import SingleTransferOperation
+
+
+@dataclass
+class SingleTransferOperationRequest:
+    operation: SingleTransferOperation
+    callback: Optional[Callable[[], None]] = None
 
 
 class SpiElementBase(ABC):
@@ -19,7 +26,7 @@ class SpiElementBase(ABC):
         """Initialize the SPI bus master object"""
         _, _ = args, kwargs
         self._set_spi_element_childs(spi_element_childs)
-        self._operation_unprocessed = Queue()
+        self._operation_request = Queue()
         self._set_name(name)
 
     def _set_spi_element_childs(
@@ -57,25 +64,28 @@ class SpiElementBase(ABC):
 
         raise ValueError(f"Name: '{name}' not found for SpiElement: {self}")
 
-    def pop_unprocessed_operation(self) -> SingleTransferOperation:
-        """Pop the next operation as an bitarray, that should be written to the
+    def pop_unprocessed_operation_request(self) -> SingleTransferOperationRequest:
+        """Pop the next operation request, that should be written to the
         physical SpiElement from the fifo of unprocessed operations.
 
-        :return: operation containing the operation in binary format (MSB first)
+        :return: SingleTransferOperationRequest containing the
+        SingleTransferOperation with command in binary format (MSB first) that
+        shoud be run next.
         """
         try:
-            return self._operation_unprocessed.get_nowait()
+            return self._operation_request.get_nowait()
         except Empty:
-            return self._get_default_operation_command()
+            return self._get_default_operation_request()
 
     @abstractmethod
-    def _get_default_operation_command(self) -> SingleTransferOperation:
-        """Get the default operation as an bitarray, that should be written to
+    def _get_default_operation_request(self) -> SingleTransferOperationRequest:
+        """Get the default operation request, that should be written to
         the physical SpiElement if no operation command is available from the
         fifo
 
-        :return: Operation containing the default operation command in binary format
-        (MSB first)
+        :return: SingleTransferOperationRequest containing the default
+        SingleTransferOperation with command in binary format (MSB first) that
+        should be run when no other SingleTransferOperation is requested.
         """
 
 
