@@ -22,9 +22,16 @@ class SingleTransferOperation(OperationBase):
 
     def _parse_response(self, rsp: bitarray) -> Any:
         """This method is used to parse the response of type bitarray into the
-        desired datatype, which is appropriate for the SingleTransferOperation."""
+        desired datatype, which is appropriate for the SingleTransferOperation.
+
+        Method shall be implemented by child class, which defines structure of
+        response.
+
+        :param rsp: bitarray response of spi transfer."""
         _ = rsp
-        raise NotImplementedError("SingleTransferOperation does not implement")
+        raise NotImplementedError(
+            "SingleTransferOperation does not implement response parsing."
+        )
 
     def __len__(self) -> int:
         """Returns the number of spi transfers required to process this operation."""
@@ -61,6 +68,8 @@ class SingleTransferOperation(OperationBase):
         return self._response
 
     def get_parsed_response(self) -> Any:
+        if not self.get_response_required():
+            return None
         rsp = self.get_response()
         if not rsp:
             raise ValueError("SingleTransferOperation does not have a response.")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional, List, TypeVar
+from typing import Optional, List, Any, TypeVar
 
 # Must import entire module to avoid circular dependency:
 # Only the type single_transfer_operation.SingleTransferOperation is used for type
@@ -38,6 +38,12 @@ class OperationBase(ABC):
     ) -> List[single_transfer_operation.SingleTransferOperation]:
         """Return a list of length self.__len__() SingleTransferOperations,
         that must be processed in order to process the Operation itself."""
+
+    @abstractmethod
+    def get_parsed_response(self) -> Any:
+        """Returns the parsed response after processing of the operation.
+
+        Must be impolemented by child class."""
 
 
 Operation = TypeVar("Operation", bound=OperationBase)

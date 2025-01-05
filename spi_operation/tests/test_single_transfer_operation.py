@@ -105,3 +105,20 @@ class TestSingleTransferOperation(unittest.TestCase):
         self.assertEqual(len(list_op), 1)
         self.assertIsInstance(list_op[0], SingleTransferOperation)
         self.assertIs(list_op[0], op)
+
+    def test_get_parsed_response_001(self):
+        with self.assertRaises(NotImplementedError):
+            op = SingleTransferOperation(
+                self.op_cmd_10_bit, self.op_rsp_10_bit, response_required=True
+            )
+            _ = op.get_parsed_response()
+
+    def test_get_parsed_response_002(self):
+        with self.assertRaises(ValueError):
+            op = SingleTransferOperation(self.op_cmd_10_bit, response_required=True)
+            _ = op.get_parsed_response()
+
+    def test_get_parsed_response_003(self):
+        op = SingleTransferOperation(self.op_cmd_10_bit, response_required=False)
+        parsed_rsp = op.get_parsed_response()
+        self.assertIs(parsed_rsp, None)

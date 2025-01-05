@@ -1,3 +1,4 @@
+from copy import deepcopy
 import unittest
 
 from bitarray import bitarray
@@ -92,3 +93,37 @@ class TestMultiTransferOperation(unittest.TestCase):
             self.assertIsInstance(single_op, SingleTransferOperation)
             self.assertIsNot(single_op, self.single_op)
             self.assertEqual(single_op, self.single_op)
+
+    def test_get_parsed_response_001(self):
+        with self.assertRaises(NotImplementedError):
+
+            def _parse_response(rsp: bitarray):
+                _, _ = self, rsp
+                ans: int = 1
+                return ans
+
+            single_op_with_response_parse = deepcopy(self.single_op)
+            single_op_with_response_parse._parse_response = _parse_response
+
+            op = MultiTransferOperation([single_op_with_response_parse])
+            _ = op.get_parsed_response()
+
+    def test_get_parsed_response_002(self):
+        with self.assertRaises(ValueError):
+            op = MultiTransferOperation(
+                [SingleTransferOperation(self.op_cmd_10_bit, response_required=True)]
+            )
+            _ = op.get_parsed_response()
+
+    def test_get_parsed_response_003(self):
+        def _parse_response(rsp: bitarray):
+            _, _ = self, rsp
+            return None
+
+        single_op_with_response_parse = deepcopy(self.single_op)
+        single_op_with_response_parse._parse_response = _parse_response
+
+        op = MultiTransferOperation([single_op_with_response_parse])
+        parsed_rsp = op.get_parsed_response()
+
+        self.assertIs(parsed_rsp, None)

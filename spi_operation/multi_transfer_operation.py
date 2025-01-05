@@ -1,6 +1,5 @@
-from bitarray import bitarray
 from copy import deepcopy
-from typing import Optional, List
+from typing import Any, List
 
 from operation_base import OperationBase
 from single_transfer_operation import SingleTransferOperation
@@ -31,3 +30,31 @@ class MultiTransferOperation(OperationBase):
     def get_single_transfer_operations(self) -> List[SingleTransferOperation]:
         list_list_op = [op.get_single_transfer_operations() for op in self._operations]
         return [op for list_op in list_list_op for op in list_op]
+
+    def _parse_response(self, operations_rsp: List[Any]) -> Any:
+        """This method is used to parse the response of type bitarray into the
+        desired datatype, which is appropriate for the SingleTransferOperation.
+
+        Method shall be implemented by child class, which defines structure of
+        response.
+
+        :param operations_rsp: List of get_parsed_response() of sub Operations
+        of self (MultiTransferOperation).
+        """
+        _ = operations_rsp
+        raise NotImplementedError(
+            "MultiTransferOperation does not implement response parsing."
+        )
+
+    def get_parsed_response(self) -> Any:
+        try:
+            operations_rsp = [op.get_parsed_response() for op in self._operations]
+        except NotImplementedError as e:
+            raise e
+        except ValueError as e:
+            raise e
+
+        if all(rsp is None for rsp in operations_rsp):
+            return None
+
+        return self._parse_response(operations_rsp)
