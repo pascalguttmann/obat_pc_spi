@@ -1,7 +1,6 @@
 import unittest
 
 from bitarray import bitarray
-from typing import Optional
 
 from single_transfer_operation import SingleTransferOperation
 
@@ -38,14 +37,10 @@ class TestSingleTransferOperation(unittest.TestCase):
         self.assertEqual(op.get_response_required(), True)
 
     def test_operation_init_005(self):
-        try:
-            op = SingleTransferOperation(
+        with self.assertRaises(ValueError):
+            _ = SingleTransferOperation(
                 self.op_cmd_10_bit, self.op_rsp_10_bit, response_required=False
             )
-        except ValueError:
-            return
-
-        self.fail("ValueError not raised for response_required==False.")
 
     def test_operation_set_response_001(self):
         op = SingleTransferOperation(self.op_cmd_10_bit)

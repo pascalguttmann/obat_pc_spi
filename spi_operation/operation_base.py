@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional, List, Any, TypeVar
+from typing import List, Any, TypeVar
 
 # Must import entire module to avoid circular dependency:
 # Only the type single_transfer_operation.SingleTransferOperation is used for type
