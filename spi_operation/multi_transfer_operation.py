@@ -13,3 +13,12 @@ class MultiTransferOperation(OperationBase):
 
     def __len__(self) -> int:
         return sum(map(len, self._operations))
+
+    def __eq__(self, other: object, /) -> bool:
+        if (
+            isinstance(other, MultiTransferOperation)
+            and self._operations == other._operations
+        ):
+            return True
+        else:
+            return False

@@ -23,5 +23,8 @@ class OperationBase(ABC):
     def __len__(self) -> int:
         """Returns the number of spi transfers required to process this operation."""
 
+    @abstractmethod
+    def __eq__(self, other: object, /) -> bool:
+        """Checks if the two operations are equal."""
 
 Operation = TypeVar("Operation", bound=OperationBase)

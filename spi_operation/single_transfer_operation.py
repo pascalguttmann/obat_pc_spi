@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from bitarray import bitarray
 from typing import Optional, Any
 
@@ -34,6 +36,17 @@ class SingleTransferOperation(OperationBase):
 
     def __repr__(self) -> str:
         return f"SingleTransferOperation: command={self._command}, response={self._response}, response_required={self._response_required}"
+
+    def __eq__(self, other: object, /) -> bool:
+        if (
+            isinstance(other, SingleTransferOperation)
+            and self._command == other._command
+            and self._response == other._response
+            and self._response_required == other._response_required
+        ):
+            return True
+        else:
+            return False
 
     def set_response(self, response: bitarray) -> None:
         if not self._response_required:

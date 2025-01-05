@@ -84,3 +84,12 @@ class TestSingleTransferOperation(unittest.TestCase):
     def test_operation_get_response_002(self):
         op = SingleTransferOperation(self.op_cmd_10_bit, self.op_rsp_10_bit)
         self.assertEqual(op.get_response(), self.op_rsp_10_bit)
+    def test_eq(self):
+        op = SingleTransferOperation(self.op_cmd_10_bit, self.op_rsp_10_bit)
+        op_eq = SingleTransferOperation(self.op_cmd_10_bit, self.op_rsp_10_bit)
+        op_neq = SingleTransferOperation(self.op_cmd_10_bit)
+        self.assertIsNot(op, op_eq)
+        self.assertEqual(op, op_eq)
+        self.assertIsNot(op, op_neq)
+        self.assertNotEqual(op, op_neq)
+
