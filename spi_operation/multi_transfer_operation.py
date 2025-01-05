@@ -1,12 +1,12 @@
 from copy import deepcopy
-from typing import Any, List
+from typing import Any, List, Sequence
 
 from operation_base import OperationBase
 from single_transfer_operation import SingleTransferOperation
 
 
 class MultiTransferOperation(OperationBase):
-    def __init__(self, operations: List[OperationBase]) -> None:
+    def __init__(self, operations: Sequence[OperationBase]) -> None:
         if not operations:
             raise ValueError(f"Excpected a non-empty list, but got {operations}")
 
