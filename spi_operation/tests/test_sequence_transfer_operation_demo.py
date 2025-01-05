@@ -4,7 +4,7 @@ from bitarray import bitarray
 from typing import List, Tuple, Any
 
 from single_transfer_operation import SingleTransferOperation
-from multi_transfer_operation import MultiTransferOperation
+from sequence_transfer_operation import SequenceTransferOperation
 
 
 # This class is just for demonstration purposes the functionality would be read
@@ -39,7 +39,7 @@ class ReadChannel(SingleTransferOperation):
 # from the datasheet of the spi_element impolementing the operation
 # functionality or be defined by the users functional requirements. I.e.
 # logical grouping of SingleTransferOperations.
-class ReadAllChannels(MultiTransferOperation):
+class ReadAllChannels(SequenceTransferOperation):
     def __init__(self) -> None:
         operations = [
             ReadChannel(0),

@@ -4,10 +4,10 @@ import unittest
 from bitarray import bitarray
 
 from single_transfer_operation import SingleTransferOperation
-from multi_transfer_operation import MultiTransferOperation
+from sequence_transfer_operation import SequenceTransferOperation
 
 
-class TestMultiTransferOperation(unittest.TestCase):
+class TestSequenceTransferOperation(unittest.TestCase):
     op_cmd_10_bit = bitarray("0001000100")
     op_rsp_10_bit = bitarray("1000100010")
     single_op = SingleTransferOperation(
@@ -15,7 +15,7 @@ class TestMultiTransferOperation(unittest.TestCase):
     )
 
     def test_init_001(self):
-        multi_op = MultiTransferOperation([self.single_op])
+        multi_op = SequenceTransferOperation([self.single_op])
         self.assertIsInstance(multi_op._operations, list)
         self.assertEqual(len(multi_op._operations), 1)
         self.assertIsInstance(multi_op._operations[0], SingleTransferOperation)
@@ -24,21 +24,21 @@ class TestMultiTransferOperation(unittest.TestCase):
 
     def test_init_002(self):
         with self.assertRaises(ValueError):
-            _ = MultiTransferOperation([])
+            _ = SequenceTransferOperation([])
 
     def test_len_001(self):
-        multi_op = MultiTransferOperation([self.single_op, self.single_op])
+        multi_op = SequenceTransferOperation([self.single_op, self.single_op])
         self.assertEqual(len(multi_op), 2)
 
     def test_len_002(self):
-        multi_op = MultiTransferOperation(
+        multi_op = SequenceTransferOperation(
             [
                 self.single_op,
-                MultiTransferOperation(
+                SequenceTransferOperation(
                     [
                         self.single_op,
                         self.single_op,
-                        MultiTransferOperation(
+                        SequenceTransferOperation(
                             [
                                 self.single_op,
                             ]
@@ -51,16 +51,18 @@ class TestMultiTransferOperation(unittest.TestCase):
         self.assertEqual(len(multi_op), 5)
 
     def test_eq(self):
-        op = MultiTransferOperation([self.single_op])
-        op_eq = MultiTransferOperation([self.single_op])
-        op_neq = MultiTransferOperation([MultiTransferOperation([self.single_op])])
+        op = SequenceTransferOperation([self.single_op])
+        op_eq = SequenceTransferOperation([self.single_op])
+        op_neq = SequenceTransferOperation(
+            [SequenceTransferOperation([self.single_op])]
+        )
         self.assertIsNot(op, op_eq)
         self.assertEqual(op, op_eq)
         self.assertIsNot(op, op_neq)
         self.assertNotEqual(op, op_neq)
 
     def test_get_single_transfer_operations_001(self):
-        multi_op = MultiTransferOperation([self.single_op])
+        multi_op = SequenceTransferOperation([self.single_op])
         list_op = multi_op.get_single_transfer_operations()
         self.assertIsInstance(list_op, list)
         self.assertEqual(len(list_op), 1)
@@ -69,14 +71,14 @@ class TestMultiTransferOperation(unittest.TestCase):
         self.assertEqual(list_op[0], self.single_op)
 
     def test_get_single_transfer_operations_002(self):
-        multi_op = MultiTransferOperation(
+        multi_op = SequenceTransferOperation(
             [
                 self.single_op,
-                MultiTransferOperation(
+                SequenceTransferOperation(
                     [
                         self.single_op,
                         self.single_op,
-                        MultiTransferOperation(
+                        SequenceTransferOperation(
                             [
                                 self.single_op,
                             ]
@@ -105,12 +107,12 @@ class TestMultiTransferOperation(unittest.TestCase):
             single_op_with_response_parse = deepcopy(self.single_op)
             single_op_with_response_parse._parse_response = _parse_response
 
-            op = MultiTransferOperation([single_op_with_response_parse])
+            op = SequenceTransferOperation([single_op_with_response_parse])
             _ = op.get_parsed_response()
 
     def test_get_parsed_response_002(self):
         with self.assertRaises(ValueError):
-            op = MultiTransferOperation(
+            op = SequenceTransferOperation(
                 [SingleTransferOperation(self.op_cmd_10_bit, response_required=True)]
             )
             _ = op.get_parsed_response()
@@ -123,7 +125,7 @@ class TestMultiTransferOperation(unittest.TestCase):
         single_op_with_response_parse = deepcopy(self.single_op)
         single_op_with_response_parse._parse_response = _parse_response
 
-        op = MultiTransferOperation([single_op_with_response_parse])
+        op = SequenceTransferOperation([single_op_with_response_parse])
         parsed_rsp = op.get_parsed_response()
 
         self.assertIs(parsed_rsp, None)

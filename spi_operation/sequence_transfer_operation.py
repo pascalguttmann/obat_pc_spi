@@ -5,7 +5,7 @@ from operation_base import OperationBase
 from single_transfer_operation import SingleTransferOperation
 
 
-class MultiTransferOperation(OperationBase):
+class SequenceTransferOperation(OperationBase):
     def __init__(self, operations: Sequence[OperationBase]) -> None:
         if not operations:
             raise ValueError(f"Excpected a non-empty list, but got {operations}")
@@ -13,14 +13,14 @@ class MultiTransferOperation(OperationBase):
         self._operations = deepcopy(operations)
 
     def __repr__(self) -> str:
-        return f"MultiTransferOperation: operations={self._operations}"
+        return f"SequenceTransferOperation: operations={self._operations}"
 
     def __len__(self) -> int:
         return sum(map(len, self._operations))
 
     def __eq__(self, other: object, /) -> bool:
         if (
-            isinstance(other, MultiTransferOperation)
+            isinstance(other, SequenceTransferOperation)
             and self._operations == other._operations
         ):
             return True
@@ -39,11 +39,11 @@ class MultiTransferOperation(OperationBase):
         response.
 
         :param operations_rsp: List of get_parsed_response() of sub Operations
-        of self (MultiTransferOperation).
+        of self (SequenceTransferOperation).
         """
         _ = operations_rsp
         raise NotImplementedError(
-            "MultiTransferOperation does not implement response parsing."
+            "SequenceTransferOperation does not implement response parsing."
         )
 
     def get_parsed_response(self) -> Any:
