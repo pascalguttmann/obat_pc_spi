@@ -68,15 +68,6 @@ class SpiElementBase(ABC):
         except Empty:
             return self._get_default_operation_command()
 
-    def put_processed_operation(self, operation: SingleTransferOperation) -> None:
-        """Put the operations response as an bitarray, after the physical
-        SpiElement responded to the fifo of processed operations.
-
-        :param response: Operation containing the operation response in binary
-        format (MSB first)
-        """
-        return self._operation_processed.put_nowait(operation)
-
     @abstractmethod
     def _get_default_operation_command(self) -> SingleTransferOperation:
         """Get the default operation as an bitarray, that should be written to
