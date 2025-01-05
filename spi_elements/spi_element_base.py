@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from multiprocessing import Value
 from typing import Optional, List, TypeVar
 
-from queue import Queue, Empty, Full
+from queue import Queue, Empty
 
 from spi_operation.single_transfer_operation import SingleTransferOperation
 
@@ -18,9 +17,9 @@ class SpiElementBase(ABC):
         **kwargs,
     ) -> None:
         """Initialize the SPI bus master object"""
+        _, _ = args, kwargs
         self._set_spi_element_childs(spi_element_childs)
         self._operation_unprocessed = Queue()
-        self._operation_processed = Queue()
         self._set_name(name)
 
     def _set_spi_element_childs(
