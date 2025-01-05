@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Callable, List
 import time
 import threading
@@ -14,17 +15,11 @@ from spi_server import SpiServer
 from spi_elements.spi_element_base import SpiElementBase
 
 
-# TODO: Change to Dataclass:
+@dataclass
 class SpiChannel:
-    def __init__(
-        self, spi_element: SpiElementBase, transfer_interval: float, cs: int
-    ) -> None:
-        self.spi_element = spi_element
-        self.transfer_interval = transfer_interval
-        self.cs = cs
-
-    def __repr__(self) -> str:
-        return f"SpiChannel(spi_element={self.spi_element}, transfer_interval={self.transfer_interval}, cs={self.cs}"
+    spi_element: SpiElementBase
+    transfer_interval: float
+    cs: int
 
 
 class SpiClient:
