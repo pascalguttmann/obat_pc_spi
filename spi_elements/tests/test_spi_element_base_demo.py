@@ -122,5 +122,33 @@ class AdcChain(SpiOperationIteratorBase):
 
 
 class TestSpiElementBase(unittest.TestCase):
+    def setup(self):
+        self.adc0 = DemoAdc()
+        self.adc1 = DemoAdc()
+        self.adc_chain = AdcChain(self.adc0, self.adc1)
+
     def test_init(self):
-        pass
+        self.setup()
+        aggregate_single_transfer_operation_req = self.adc_chain.__next__()
+        self.assertEqual(
+            aggregate_single_transfer_operation_req.operation.get_command(),
+            DemoAdcNop().get_command() + DemoAdcNop().get_command(),
+        )
+
+    def test_fill_fifo(self):
+        self.setup()
+        ar = self.adc_chain.read_all_adcs(0)
+        self.assertIsInstance(ar, AsyncReturn)
+        self.assertFalse(ar.is_finished())
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcNop())
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcNop())
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcNop())
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcNop())
+        ar = self.adc_chain.read_all_adcs(0)
+        ar = self.adc_chain.read_all_adcs(1)
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(1))
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcReadChannelOp(1))
