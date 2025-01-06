@@ -98,6 +98,6 @@ class SpiClient:
             _ = rx_bytearray
 
         if op_req.callback:
-            op_req.callback()
+            op_req.callback(op_req.operation)
 
         return

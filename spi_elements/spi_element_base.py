@@ -12,7 +12,7 @@ from spi_operation.single_transfer_operation import SingleTransferOperation
 @dataclass
 class SingleTransferOperationRequest:
     operation: SingleTransferOperation
-    callback: Optional[Callable[[], None]] = None
+    callback: Optional[Callable[..., None]] = None
 
 
 class SpiElementBase(ABC):
@@ -76,6 +76,18 @@ class SpiElementBase(ABC):
             return self._operation_request.get_nowait()
         except Empty:
             return self._get_default_operation_request()
+
+    def _put_unprocessed_operation_request(
+        self,
+        op_req: SingleTransferOperationRequest | List[SingleTransferOperationRequest],
+    ) -> None:
+        if not isinstance(op_req, list):
+            op_req_list = [op_req]
+        else:
+            op_req_list = op_req
+
+        for x in op_req_list:
+            self._operation_request.put_nowait(x)
 
     @abstractmethod
     def _get_default_operation_request(self) -> SingleTransferOperationRequest:
