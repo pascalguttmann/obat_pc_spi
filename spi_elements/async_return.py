@@ -11,10 +11,13 @@ class AsyncReturn:
     def _wrap_callback(
         self, callback: Optional[Callable[..., None]]
     ) -> Callable[..., None]:
-        def wrapper(*args, **kw_args) -> None:
-            self._result = (*args, *kw_args)
+        def wrapper(*args) -> None:
+            if len(args) == 1:
+                self._result = args[0]
+            else:
+                self._result = args
             if callback:
-                _ = callback(*args, **kw_args)
+                _ = callback(*args)
             self._callback_finished.set()
             return None
 

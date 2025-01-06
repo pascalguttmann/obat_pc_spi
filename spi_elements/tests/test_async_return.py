@@ -42,6 +42,12 @@ class TestAsyncReturn(unittest.TestCase):
         res = ar.get_result()
         self.assertEqual(res, (42, 0xDA1A))
 
+    def test_get_result_003(self):
+        ar = AsyncReturn()
+        ar.get_callback()(42)
+        res = ar.get_result()
+        self.assertEqual(res, 42)
+
     def test_wait(self):
         ar = AsyncReturn()
         ar.get_callback()(42, 0xDA1A)
