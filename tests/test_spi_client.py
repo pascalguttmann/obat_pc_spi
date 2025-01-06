@@ -25,9 +25,7 @@ class TestSpiClient(unittest.TestCase):
     def test_spi_client_init(self):
         server = SpiServer(Virtual())
         spi_element = TestSpiElement()
-        spi_channels = [
-            SpiChannel(spi_element=spi_element, transfer_interval=0.1, cs=0)
-        ]
+        spi_channels = [SpiChannel(spi_element, transfer_interval=0.1, cs=0)]
 
         client = SpiClient(server, spi_channels)
         self.assertFalse(client._spi_channel_threads_run_flag)

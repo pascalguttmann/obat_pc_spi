@@ -12,12 +12,12 @@ from spi_driver_ipc import (
     unpack_server_response,
 )
 from spi_server import SpiServer
-from spi_elements.spi_element_base import SpiElementBase
+from spi_elements import SpiOperationIteratorBase
 
 
 @dataclass
 class SpiChannel:
-    spi_element: SpiElementBase
+    spi_operation_iterator: SpiOperationIteratorBase
     transfer_interval: float
     cs: int
 
@@ -85,7 +85,7 @@ class SpiClient:
         return unpack_server_response(ipc.read())
 
     def _transfer_spi_channel(self, spi_channel: SpiChannel) -> None:
-        op_req = next(spi_channel.spi_element)
+        op_req = next(spi_channel.spi_operation_iterator)
         tx_bytearray = bytearray(op_req.operation.get_command().tobytes())
 
         self._write_to_spi_server(spi_channel.cs, tx_bytearray)
