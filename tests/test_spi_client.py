@@ -24,7 +24,7 @@ class TestSpiElement(SpiElementBase):
 class TestSpiClient(unittest.TestCase):
     def test_spi_client_init(self):
         server = SpiServer(Virtual())
-        spi_element = TestSpiElement(name="test spi element", spi_element_childs=None)
+        spi_element = TestSpiElement()
         spi_channels = [
             SpiChannel(spi_element=spi_element, transfer_interval=0.1, cs=0)
         ]

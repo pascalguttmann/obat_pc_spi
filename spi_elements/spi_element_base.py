@@ -1,31 +1,42 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import Callable, Optional, List, TypeVar
-from dataclasses import dataclass
+from typing import List, TypeVar
 
 from queue import Queue, Empty
 
-from spi_operation.single_transfer_operation import SingleTransferOperation
+from spi_operation_iterator import (
+    SpiOperationIteratorBase,
+    SingleTransferOperationRequest,
+)
 
 
-@dataclass
-class SingleTransferOperationRequest:
-    operation: SingleTransferOperation
-    callback: Optional[Callable[..., None]] = None
+class SpiElementBase(SpiOperationIteratorBase):
+    """SpiElementBase is intended to represent physical Spi devices. They have
+    a fifo of operation requests, that shall be processed in sequence. The
+    operation requests can be retrieved by calling next(mySpiElementObj).
 
+    The child class representing the type of SpiElement which is used,
 
-class SpiElementBase(ABC):
-    def __init__(
-        self,
-        *args,
-        **kwargs,
-    ) -> None:
-        """Initialize the SPI bus master object"""
-        _, _ = args, kwargs
+    - shall implement methods to fill the operation request queue by calling
+      self._put_unprocessed_operation_request().
+    - must implement self._get_default_operation_request() to return the
+      operation request, that shall be processed when no operation request can
+      be retrieved from the fifo.
+    """
+
+    def __init__(self) -> None:
+        """Initialize the SpiElement with an empty queue."""
         self._operation_request = Queue()
 
-    def pop_unprocessed_operation_request(self) -> SingleTransferOperationRequest:
+    def __next__(self) -> SingleTransferOperationRequest:
+        """Return operation request from fifo if available. Fallback to the
+        default operation request."""
+        try:
+            return self._pop_unprocessed_operation_request()
+        except Empty:
+            return self._get_default_operation_request()
+
+    def _pop_unprocessed_operation_request(self) -> SingleTransferOperationRequest:
         """Pop the next operation request, that should be written to the
         physical SpiElement from the fifo of unprocessed operations.
 
@@ -33,15 +44,16 @@ class SpiElementBase(ABC):
         SingleTransferOperation with command in binary format (MSB first) that
         shoud be run next.
         """
-        try:
-            return self._operation_request.get_nowait()
-        except Empty:
-            return self._get_default_operation_request()
+        return self._operation_request.get_nowait()
 
     def _put_unprocessed_operation_request(
         self,
         op_req: SingleTransferOperationRequest | List[SingleTransferOperationRequest],
     ) -> None:
+        """Put operation request(s), into the fifo that will be processed by
+        the physical SpiElement. This method should be used by child classes to
+        request the processing of spi operations.
+        """
         if not isinstance(op_req, list):
             op_req_list = [op_req]
         else:
@@ -49,17 +61,6 @@ class SpiElementBase(ABC):
 
         for x in op_req_list:
             self._operation_request.put_nowait(x)
-
-    @abstractmethod
-    def _get_default_operation_request(self) -> SingleTransferOperationRequest:
-        """Get the default operation request, that should be written to
-        the physical SpiElement if no operation command is available from the
-        fifo
-
-        :return: SingleTransferOperationRequest containing the default
-        SingleTransferOperation with command in binary format (MSB first) that
-        should be run when no other SingleTransferOperation is requested.
-        """
 
 
 SpiElement = TypeVar("SpiElement", bound=SpiElementBase)
