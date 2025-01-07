@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Sequence
 from bitarray import bitarray
 from itertools import accumulate
 
@@ -25,7 +25,7 @@ class AggregateOperation(SingleTransferOperation):
 
 class AggregateOperationIterator(SpiOperationIteratorBase):
     def __init__(
-        self, operation_request_iterators: List[SpiOperationIteratorBase]
+        self, operation_request_iterators: Sequence[SpiOperationIteratorBase]
     ) -> None:
         self._operation_request_iterators = operation_request_iterators
 
