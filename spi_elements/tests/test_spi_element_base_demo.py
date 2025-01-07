@@ -118,7 +118,7 @@ class AdcChain(SpiOperationIteratorBase):
         aret_0 = self._adc0.read_channel(id, set_async_return_after_last_sub_operation)
         aret_1 = self._adc1.read_channel(id, set_async_return_after_last_sub_operation)
 
-        return AsyncReturn()
+        return ar
 
 
 class TestSpiElementBase(unittest.TestCase):

@@ -73,7 +73,7 @@ class AdcChain(AggregateOperationIterator):
             for op_req_it in self._operation_request_iterators
         ]
 
-        return AsyncReturn()
+        return ar
 
 
 class TestAggregateOperationIterator(unittest.TestCase):
