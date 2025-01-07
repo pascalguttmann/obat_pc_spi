@@ -1,24 +1,38 @@
 import unittest
 import time
 
+from bitarray import bitarray
+from typing import Any
+
 from spi_client import SpiClient, SpiChannel
 from spi_server import SpiServer
 from spi_master.virtual.virtual import Virtual
-
 from spi_elements.spi_element_base import SpiElementBase, SingleTransferOperationRequest
-from bitarray import bitarray
-
 from spi_operation import SingleTransferOperation
+
+
+class TestSingleTransferOperation(SingleTransferOperation):
+    def __init__(self) -> None:
+        super().__init__(bitarray("1111000011001100"), response_required=True)
+        return None
+
+    def _parse_response(self, rsp: bitarray) -> Any:
+        _ = rsp
+        return 42
 
 
 class TestSpiElement(SpiElementBase):
     def _get_default_operation_request(self) -> SingleTransferOperationRequest:
         return SingleTransferOperationRequest(
-            SingleTransferOperation(
-                bitarray("1111000011001100"), response_required=True
-            ),
-            callback=None,
+            operation=TestSingleTransferOperation(),
+            callback=myCallback,
         )
+
+
+def myCallback(*args) -> None:
+    if not args[0] == 42:
+        raise ValueError
+    return None
 
 
 class TestSpiClient(unittest.TestCase):
