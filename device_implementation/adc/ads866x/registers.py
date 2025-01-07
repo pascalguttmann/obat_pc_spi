@@ -6,6 +6,12 @@ def int_to_bitarray(n: int, bitlen: int):
     return bitarray(bin(n)[2:].zfill(bitlen))
 
 
+@dataclass
+class BitfieldSpec:
+    data: bitarray
+    const: dict[str, bitarray]
+
+
 @dataclass(kw_only=True)
 class Ads866xRegister:
     address: int
@@ -45,12 +51,12 @@ class Ads866xRegister:
 
 @dataclass
 class RstPwrctlReg(Ads866xRegister):
-    WKEY: bitarray = field(init=False)
-    VDD_AL_DIS: bitarray = field(init=False)
-    IN_AL_DIS: bitarray = field(init=False)
-    RSTN_APP: bitarray = field(init=False)
-    NAP_EN: bitarray = field(init=False)
-    PWRDN: bitarray = field(init=False)
+    WKEY: BitfieldSpec = field(init=False)
+    VDD_AL_DIS: BitfieldSpec = field(init=False)
+    IN_AL_DIS: BitfieldSpec = field(init=False)
+    RSTN_APP: BitfieldSpec = field(init=False)
+    NAP_EN: BitfieldSpec = field(init=False)
+    PWRDN: BitfieldSpec = field(init=False)
 
     def __init__(
         self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
@@ -59,9 +65,25 @@ class RstPwrctlReg(Ads866xRegister):
 
     def __post_init__(self):
         super().__post_init__()
-        self.WKEY = self.data[8:16]
-        self.VDD_AL_DIS = self.data[5:6]
-        self.IN_AL_DIS = self.data[4:5]
-        self.RSTN_APP = self.data[2:3]
-        self.NAP_EN = self.data[1:2]
-        self.PWRDN = self.data[0:1]
+        self.WKEY = BitfieldSpec(
+            self.data[8:16], {"PROTECTION_KEY": int_to_bitarray(0x69, 8)}
+        )
+        self.VDD_AL_DIS = BitfieldSpec(
+            self.data[5:6],
+            {"VDD_AL_ENABLED": bitarray("0"), "VDD_AL_DISABLED": bitarray("1")},
+        )
+        self.IN_AL_DIS = BitfieldSpec(
+            self.data[4:5],
+            {"IN_AL_ENABLED": bitarray("0"), "IN_AL_DISABLED": bitarray("1")},
+        )
+        self.RSTN_APP = BitfieldSpec(
+            self.data[2:3], {"RSTN_POR": bitarray("0"), "RSTN_APP": bitarray("1")}
+        )
+        self.NAP_EN = BitfieldSpec(
+            self.data[1:2],
+            {"NAP_DISABLED": bitarray("0"), "NAP_ENABLED": bitarray("1")},
+        )
+        self.PWRDN = BitfieldSpec(
+            self.data[0:1],
+            {"MODE_ACTIVE": bitarray("0"), "MODE_PWR_DOWN": bitarray("1")},
+        )
