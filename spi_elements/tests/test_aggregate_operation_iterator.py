@@ -53,6 +53,11 @@ class AdcChain(AggregateOperationIterator):
     def __init__(self, adcs: List[DemoAdc]):
         super().__init__(adcs)
 
+    def read_first_adc(
+        self, id: int, callback: Optional[Callable[..., None]] = None
+    ) -> AsyncReturn:
+        return cast(DemoAdc, self._operation_request_iterators[0]).read_channel(id)
+
     def read_all_adcs(
         self, id: int, callback: Optional[Callable[..., None]] = None
     ) -> AsyncReturn:
@@ -90,11 +95,35 @@ class TestAggregateOperationIterator(unittest.TestCase):
             DemoAdcNop().get_command() + DemoAdcNop().get_command(),
         )
 
-    def test_fill_fifo(self):
+    def test_fill_fifo_001(self):
         self.setup()
         ar = self.adc_chain.read_all_adcs(0)
         self.assertIsInstance(ar, AsyncReturn)
         self.assertFalse(ar.is_finished())
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcNop())
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcNop())
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcNop())
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcNop())
+        ar = self.adc_chain.read_all_adcs(0)
+        ar = self.adc_chain.read_all_adcs(1)
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcReadChannelOp(0))
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(1))
+        self.assertEqual(self.adc1.__next__().operation, DemoAdcReadChannelOp(1))
+
+    def test_fill_fifo_002(self):
+        self.setup()
+        ar = self.adc_chain.read_first_adc(1)
+        ar = self.adc_chain.read_first_adc(1)
+        ar = self.adc_chain.read_first_adc(1)
+        ar = self.adc_chain.read_all_adcs(0)
+        self.assertIsInstance(ar, AsyncReturn)
+        self.assertFalse(ar.is_finished())
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(1))
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(1))
+        self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(1))
         self.assertEqual(self.adc0.__next__().operation, DemoAdcReadChannelOp(0))
         self.assertEqual(self.adc1.__next__().operation, DemoAdcReadChannelOp(0))
         self.assertEqual(self.adc0.__next__().operation, DemoAdcNop())
