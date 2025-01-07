@@ -6,7 +6,7 @@ from spi_operation import SingleTransferOperation
 from spi_element_base import SpiElementBase, SingleTransferOperationRequest
 from spi_elements.async_return import AsyncReturn
 
-from aggregate_operation_iterator import AggregateOperationIterator
+from aggregate_operation_request_iterator import AggregateOperationRequestIterator
 
 
 class DemoAdcNop(SingleTransferOperation):
@@ -49,7 +49,7 @@ class DemoAdc(SpiElementBase):
         return ar
 
 
-class AdcChain(AggregateOperationIterator):
+class AdcChain(AggregateOperationRequestIterator):
     def __init__(self, adcs: List[DemoAdc]):
         super().__init__(adcs)
 
@@ -81,7 +81,7 @@ class AdcChain(AggregateOperationIterator):
         return ar
 
 
-class TestAggregateOperationIterator(unittest.TestCase):
+class TestAggregateOperationRequestIterator(unittest.TestCase):
     def setup(self):
         self.adc0 = DemoAdc()
         self.adc1 = DemoAdc()

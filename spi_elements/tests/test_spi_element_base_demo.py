@@ -7,8 +7,8 @@ from itertools import accumulate
 from spi_element_base import SpiElementBase
 from spi_operation import SingleTransferOperation
 from spi_elements.async_return import AsyncReturn
-from spi_elements.spi_operation_iterator import (
-    SpiOperationIteratorBase,
+from spi_elements.spi_operation_request_iterator import (
+    SpiOperationRequestIteratorBase,
     SingleTransferOperationRequest,
 )
 
@@ -67,7 +67,7 @@ class DemoAdc(SpiElementBase):
         return ar
 
 
-class AdcChain(SpiOperationIteratorBase):
+class AdcChain(SpiOperationRequestIteratorBase):
     def __init__(self, adc0: DemoAdc, adc1: DemoAdc):
         self._adc0 = adc0
         self._adc1 = adc1

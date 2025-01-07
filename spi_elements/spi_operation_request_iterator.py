@@ -12,7 +12,7 @@ class SingleTransferOperationRequest:
     callback: Optional[Callable[..., None]] = None
 
 
-class SpiOperationIteratorBase(ABC):
+class SpiOperationRequestIteratorBase(ABC):
     def __iter__(self):
         return self
 
@@ -32,4 +32,4 @@ class SpiOperationIteratorBase(ABC):
         """
 
 
-SpiOperationIterator = TypeVar("SpiOperationIterator", bound=SpiOperationIteratorBase)
+SpiOperationRequestIterator = TypeVar("SpiOperationRequestIterator", bound=SpiOperationRequestIteratorBase)

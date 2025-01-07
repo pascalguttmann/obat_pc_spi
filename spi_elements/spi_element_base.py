@@ -4,13 +4,13 @@ from typing import List, TypeVar
 
 from queue import Queue, Empty
 
-from spi_operation_iterator import (
-    SpiOperationIteratorBase,
+from spi_operation_request_iterator import (
+    SpiOperationRequestIteratorBase,
     SingleTransferOperationRequest,
 )
 
 
-class SpiElementBase(SpiOperationIteratorBase):
+class SpiElementBase(SpiOperationRequestIteratorBase):
     """SpiElementBase is intended to represent physical Spi devices. They have
     a fifo of operation requests, that shall be processed in sequence. The
     operation requests can be retrieved by calling next(mySpiElementObj).

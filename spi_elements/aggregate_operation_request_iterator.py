@@ -3,8 +3,8 @@ from bitarray import bitarray
 from itertools import accumulate
 
 from spi_operation import SingleTransferOperation
-from spi_elements.spi_operation_iterator import (
-    SpiOperationIteratorBase,
+from spi_elements.spi_operation_request_iterator import (
+    SpiOperationRequestIteratorBase,
     SingleTransferOperationRequest,
 )
 
@@ -23,9 +23,9 @@ class AggregateOperation(SingleTransferOperation):
         )
 
 
-class AggregateOperationIterator(SpiOperationIteratorBase):
+class AggregateOperationRequestIterator(SpiOperationRequestIteratorBase):
     def __init__(
-        self, operation_request_iterators: Sequence[SpiOperationIteratorBase]
+        self, operation_request_iterators: Sequence[SpiOperationRequestIteratorBase]
     ) -> None:
         self._operation_request_iterators = operation_request_iterators
 
