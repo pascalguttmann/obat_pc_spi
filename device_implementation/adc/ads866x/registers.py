@@ -50,6 +50,22 @@ class Ads866xRegister:
 
 
 @dataclass
+class DeviceIdReg(Ads866xRegister):
+    DEVICE_ADDR: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=0x00, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.DEVICE_ADDR = BitfieldSpec(
+            self.data[16:20], {"DEFAULT_ADDR": bitarray("0000")}
+        )
+
+
+@dataclass
 class RstPwrctlReg(Ads866xRegister):
     WKEY: BitfieldSpec = field(init=False)
     VDD_AL_DIS: BitfieldSpec = field(init=False)
