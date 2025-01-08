@@ -13,8 +13,6 @@ Datasheet: https://www.ti.com/lit/ds/symlink/ads8661.pdf
 
 from adc_base import AdcBase
 
-import operations as op
-
 
 class Ads866x(AdcBase):
     pass
