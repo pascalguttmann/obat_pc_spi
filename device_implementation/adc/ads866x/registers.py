@@ -246,3 +246,51 @@ class RangeSelReg(Ads866xRegister):
                 "UNIPOLAR_5V12": bitarray("1011"),
             },
         )
+
+
+@dataclass
+class AlarmReg(Ads866xRegister):
+    ACTIVE_VDD_L_FLAG: BitfieldSpec = field(init=False)
+    ACTIVE_VDD_H_FLAG: BitfieldSpec = field(init=False)
+    ACTIVE_IN_L_FLAG: BitfieldSpec = field(init=False)
+    ACTIVE_IN_H_FLAG: BitfieldSpec = field(init=False)
+    TRP_VDD_L_FLAG: BitfieldSpec = field(init=False)
+    TRP_VDD_H_FLAG: BitfieldSpec = field(init=False)
+    TRP_IN_L_FLAG: BitfieldSpec = field(init=False)
+    TRP_IN_H_FLAG: BitfieldSpec = field(init=False)
+    OVW_ALARM: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=0x20, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.ACTIVE_VDD_L_FLAG = BitfieldSpec(
+            self.data[15:16], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.ACTIVE_VDD_H_FLAG = BitfieldSpec(
+            self.data[14:15], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.ACTIVE_IN_L_FLAG = BitfieldSpec(
+            self.data[11:12], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.ACTIVE_IN_H_FLAG = BitfieldSpec(
+            self.data[10:11], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.TRP_VDD_L_FLAG = BitfieldSpec(
+            self.data[7:8], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.TRP_VDD_H_FLAG = BitfieldSpec(
+            self.data[6:7], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.TRP_IN_L_FLAG = BitfieldSpec(
+            self.data[5:6], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.TRP_IN_H_FLAG = BitfieldSpec(
+            self.data[4:5], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
+        self.OVW_ALARM = BitfieldSpec(
+            self.data[0:1], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
+        )
