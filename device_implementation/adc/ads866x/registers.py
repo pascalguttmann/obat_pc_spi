@@ -125,3 +125,41 @@ class SdiCtlReg(Ads866xRegister):
                 "SPI_MODE_3_CPOL_1_CPHA_1": bitarray("11"),
             },
         )
+
+
+@dataclass
+class SdoCtlReg(Ads866xRegister):
+    GPO_VAL: BitfieldSpec = field(init=False)
+    SDO1_CONFIG: BitfieldSpec = field(init=False)
+    SSYNC_CLK: BitfieldSpec = field(init=False)
+    SDO_MODE: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=0x0C, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.GPO_VAL = BitfieldSpec(
+            self.data[12:13], {"LOW": bitarray("0"), "HIGH": bitarray("1")}
+        )
+        self.SDO1_CONFIG = BitfieldSpec(
+            self.data[8:10],
+            {
+                "SDO1_TRISTATE": bitarray("00"),
+                "SDO1_ALARM": bitarray("01"),
+                "SDO1_GPO": bitarray("10"),
+                "SDO1_SPI_2BIT_SDO": bitarray("11"),
+            },
+        )
+        self.SSYNC_CLK = BitfieldSpec(
+            self.data[6:7], {"CLK_EXT": bitarray("0"), "CLK_INT": bitarray("1")}
+        )
+        self.SDO_MODE = BitfieldSpec(
+            self.data[0:2],
+            {
+                "SDO_DEFAULT_CLK": bitarray("00"),
+                "SDO_INTERNAL_CLK": bitarray("11"),
+            },
+        )
