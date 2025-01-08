@@ -294,3 +294,29 @@ class AlarmReg(Ads866xRegister):
         self.OVW_ALARM = BitfieldSpec(
             self.data[0:1], {"NO_ALARM": bitarray("0"), "ALARM": bitarray("1")}
         )
+
+
+@dataclass
+class AlarmHThReg(Ads866xRegister):  # Alarm hysteresis and high threshold
+    INP_ALARM_HYST: BitfieldSpec = field(init=False)
+    INP_ALARM_HIGH_TH: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=24, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.INP_ALARM_HYST = BitfieldSpec(
+            self.data[30:32],
+            {
+                "HYST_00": bitarray("00"),
+                "HYST_01": bitarray("01"),
+                "HYST_10": bitarray("10"),
+                "HYST_11": bitarray("11"),
+            },
+        )
+        self.INP_ALARM_HIGH_TH = BitfieldSpec(
+            self.data[4:16], {"DEFAULT": int_to_bitarray(0xFFF, 12)}
+        )
