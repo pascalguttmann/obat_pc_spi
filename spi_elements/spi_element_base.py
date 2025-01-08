@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, TypeVar
 
 from queue import Queue, Empty
+from threading import Lock
 
 from spi_operation_request_iterator import (
     SpiOperationRequestIteratorBase,
@@ -27,14 +28,16 @@ class SpiElementBase(SpiOperationRequestIteratorBase):
     def __init__(self) -> None:
         """Initialize the SpiElement with an empty queue."""
         self._operation_request = Queue()
+        self._queue_lock = Lock()
 
     def __next__(self) -> SingleTransferOperationRequest:
         """Return operation request from fifo if available. Fallback to the
         default operation request."""
-        try:
-            return self._pop_unprocessed_operation_request()
-        except Empty:
-            return self._get_default_operation_request()
+        with self._queue_lock:
+            try:
+                return self._pop_unprocessed_operation_request()
+            except Empty:
+                return self._get_default_operation_request()
 
     def _pop_unprocessed_operation_request(self) -> SingleTransferOperationRequest:
         """Pop the next operation request, that should be written to the
@@ -59,8 +62,9 @@ class SpiElementBase(SpiOperationRequestIteratorBase):
         else:
             op_req_list = op_req
 
-        for x in op_req_list:
-            self._operation_request.put_nowait(x)
+        with self._queue_lock:
+            for x in op_req_list:
+                self._operation_request.put_nowait(x)
 
 
 SpiElement = TypeVar("SpiElement", bound=SpiElementBase)
