@@ -103,3 +103,25 @@ class RstPwrctlReg(Ads866xRegister):
             self.data[0:1],
             {"MODE_ACTIVE": bitarray("0"), "MODE_PWR_DOWN": bitarray("1")},
         )
+
+
+@dataclass
+class SdiCtlReg(Ads866xRegister):
+    SDI_MODE: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=0x08, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.SDI_MODE = BitfieldSpec(
+            self.data[0:2],
+            {
+                "SPI_MODE_0_CPOL_0_CPHA_0": bitarray("00"),
+                "SPI_MODE_1_CPOL_0_CPHA_1": bitarray("01"),
+                "SPI_MODE_2_CPOL_1_CPHA_0": bitarray("10"),
+                "SPI_MODE_3_CPOL_1_CPHA_1": bitarray("11"),
+            },
+        )
