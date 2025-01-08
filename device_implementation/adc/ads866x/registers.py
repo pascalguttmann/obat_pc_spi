@@ -320,3 +320,19 @@ class AlarmHThReg(Ads866xRegister):  # Alarm hysteresis and high threshold
         self.INP_ALARM_HIGH_TH = BitfieldSpec(
             self.data[4:16], {"DEFAULT": int_to_bitarray(0xFFF, 12)}
         )
+
+
+@dataclass
+class AlarmLThReg(Ads866xRegister):  # Alarm low threshold
+    INP_ALARM_LOW_TH: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=28, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.INP_ALARM_LOW_TH = BitfieldSpec(
+            self.data[4:16], {"DEFAULT": int_to_bitarray(0x000, 12)}
+        )
