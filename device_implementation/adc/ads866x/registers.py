@@ -214,3 +214,35 @@ class DataOutCtlReg(Ads866xRegister):
                 "ALTERNATE_DOUBLE_ZEROS_DOUBLE_ONES": bitarray("111"),
             },
         )
+
+
+@dataclass
+class RangeSelReg(Ads866xRegister):
+    INTREF_DIS: BitfieldSpec = field(init=False)
+    RANGE_SEL: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=0x14, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.INTREF_DIS = BitfieldSpec(
+            self.data[6:7],
+            {"INTREF_ENABLE": bitarray("0"), "INTREF_DISABLE": bitarray("1")},
+        )
+        self.RANGLE_SEL = BitfieldSpec(
+            self.data[0:4],
+            {
+                "BIPOLAR_12V288": bitarray("0000"),
+                "BIPOLAR_10V24": bitarray("0001"),
+                "BIPOLAR_6V144": bitarray("0010"),
+                "BIPOLAR_5V12": bitarray("0011"),
+                "BIPOLAR_2V56": bitarray("0100"),
+                "UNIPOLAR_12V288": bitarray("1000"),
+                "UNIPOLAR_10V24": bitarray("1001"),
+                "UNIPOLAR_6V144": bitarray("1010"),
+                "UNIPOLAR_5V12": bitarray("1011"),
+            },
+        )
