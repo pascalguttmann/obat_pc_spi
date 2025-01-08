@@ -163,3 +163,54 @@ class SdoCtlReg(Ads866xRegister):
                 "SDO_INTERNAL_CLK": bitarray("11"),
             },
         )
+
+
+@dataclass
+class DataOutCtlReg(Ads866xRegister):
+    DEVICE_ADDR_INCL: BitfieldSpec = field(init=False)
+    VDD_ACTIVE_L_ALARM_INCL: BitfieldSpec = field(init=False)
+    VDD_ACTIVE_H_ALARM_INCL: BitfieldSpec = field(init=False)
+    IN_ACTIVE_L_ALARM_INCL: BitfieldSpec = field(init=False)
+    IN_ACTIVE_H_ALARM_INCL: BitfieldSpec = field(init=False)
+    RANGLE_INCL: BitfieldSpec = field(init=False)
+    PAR_EN: BitfieldSpec = field(init=False)
+    DATA_VAL: BitfieldSpec = field(init=False)
+
+    def __init__(
+        self, data: bitarray = bitarray("00000000 00000000 00000000 00000000")
+    ):
+        super().__init__(address=0x10, data=data)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.DEVICE_ADDR_INCL = BitfieldSpec(
+            self.data[14:15], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
+        )
+        self.VDD_ACTIVE_L_ALARM_INCL = BitfieldSpec(
+            self.data[13:14], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
+        )
+        self.VDD_ACTIVE_H_ALARM_INCL = BitfieldSpec(
+            self.data[12:13], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
+        )
+        self.IN_ACTIVE_L_ALARM_INCL = BitfieldSpec(
+            self.data[11:12], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
+        )
+        self.IN_ACTIVE_H_ALARM_INCL = BitfieldSpec(
+            self.data[10:11], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
+        )
+        self.RANGLE_INCL = BitfieldSpec(
+            self.data[8:9], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
+        )
+        self.PAR_EN = BitfieldSpec(
+            self.data[3:4], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
+        )
+        self.DATA_VAL = BitfieldSpec(
+            self.data[0:3],
+            {
+                "CONVERSION_RESULT": bitarray("000"),
+                "ALL_ZEROS": bitarray("100"),
+                "ALL_ONES": bitarray("101"),
+                "ALTERNATE_ZEROS_ONES": bitarray("110"),
+                "ALTERNATE_DOUBLE_ZEROS_DOUBLE_ONES": bitarray("111"),
+            },
+        )
