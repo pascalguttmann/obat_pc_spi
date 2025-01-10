@@ -172,7 +172,7 @@ class DataOutCtlReg(Ads866xRegister):
     VDD_ACTIVE_H_ALARM_INCL: BitfieldSpec = field(init=False)
     IN_ACTIVE_L_ALARM_INCL: BitfieldSpec = field(init=False)
     IN_ACTIVE_H_ALARM_INCL: BitfieldSpec = field(init=False)
-    RANGLE_INCL: BitfieldSpec = field(init=False)
+    RANGE_INCL: BitfieldSpec = field(init=False)
     PAR_EN: BitfieldSpec = field(init=False)
     DATA_VAL: BitfieldSpec = field(init=False)
 
@@ -198,7 +198,7 @@ class DataOutCtlReg(Ads866xRegister):
         self.IN_ACTIVE_H_ALARM_INCL = BitfieldSpec(
             self.data[10:11], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
         )
-        self.RANGLE_INCL = BitfieldSpec(
+        self.RANGE_INCL = BitfieldSpec(
             self.data[8:9], {"EXCLUDE": bitarray("0"), "INCLUDE": bitarray("1")}
         )
         self.PAR_EN = BitfieldSpec(
@@ -232,7 +232,7 @@ class RangeSelReg(Ads866xRegister):
             self.data[6:7],
             {"INTREF_ENABLE": bitarray("0"), "INTREF_DISABLE": bitarray("1")},
         )
-        self.RANGLE_SEL = BitfieldSpec(
+        self.RANGE_SEL = BitfieldSpec(
             self.data[0:4],
             {
                 "BIPOLAR_12V288": bitarray("0000"),
