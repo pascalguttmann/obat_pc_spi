@@ -379,8 +379,8 @@ class WriteVerifyWord(SequenceTransferOperation):
         :param data: 32-bit data
         """
         ops = []
-        ops.append(WriteWord(addr=addr, data=data).get_single_transfer_operations())
-        ops.append(ReadWord(addr=addr).get_single_transfer_operations())
+        ops.append(WriteWord(addr=addr, data=data))
+        ops.append(ReadWord(addr=addr))
 
         self._expected_data = data
         super().__init__(ops)
