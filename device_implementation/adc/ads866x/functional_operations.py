@@ -1,3 +1,4 @@
+from multiprocessing import Value
 from typing import Any, List
 from bitarray import bitarray
 from enum import Enum
@@ -133,5 +134,56 @@ class ReadVoltage(op.Ads866xSingleTransferOperation):
         super().__init__(response_required=True)
 
     def _parse_response(self, rsp: bitarray) -> Any:
-        _ = rsp
-        raise NotImplementedError
+        if not len(rsp) == 32:
+            raise ValueError(
+                f"WriteVerifyWord expected sub operations 32-Bit bitarray, but got {len(rsp)=}"
+            )
+
+        conv_result = rsp[20:32]
+        device_addr = rsp[16:20]
+        avdd_alaram = rsp[14:16]
+        input_alarm = rsp[12:14]
+        input_range = rsp[8:12]
+        parity_bits = rsp[6:8]
+        _ = rsp[0:6]
+
+        data_frame_parity_bit = parity_bits[0:1]
+        conv_result_parity_bit = parity_bits[1:2]
+
+        if not self._check_even_parity(conv_result_parity_bit + conv_result):
+            raise ValueError("ReadVoltage expected even parity for conversion_result.")
+
+        if not self._check_even_parity(data_frame_parity_bit + rsp[8:32]):
+            raise ValueError("ReadVoltage expected even parity for frame.")
+
+        _ = device_addr
+        _ = avdd_alaram
+        _ = input_alarm
+
+        n = 2**12
+        match input_range:
+            case Ads866xInputRange.BIPOLAR_12V288:
+                sens_V_per_lsb = 0.006
+            case Ads866xInputRange.BIPOLAR_10V24:
+                sens_V_per_lsb = 0.005
+            case Ads866xInputRange.BIPOLAR_6V144:
+                sens_V_per_lsb = 0.003
+            case Ads866xInputRange.BIPOLAR_5V12:
+                sens_V_per_lsb = 0.0025
+            case Ads866xInputRange.BIPOLAR_2V56:
+                sens_V_per_lsb = 0.00125
+            case Ads866xInputRange.UNIPOLAR_12V288:
+                sens_V_per_lsb = 0.003
+            case Ads866xInputRange.UNIPOLAR_10V24:
+                sens_V_per_lsb = 0.0025
+            case Ads866xInputRange.UNIPOLAR_6V144:
+                sens_V_per_lsb = 0.0015
+            case Ads866xInputRange.UNIPOLAR_5V12:
+                sens_V_per_lsb = 0.00125
+            case _:
+                raise ValueError(f"ReadVoltage Unknown input_range {input_range}.")
+
+        return float(sens_V_per_lsb * int("".join(reversed(conv_result.to01())), 2))
+
+    def _check_even_parity(self, ba: bitarray) -> bool:
+        return ba.count() % 2 == 0
