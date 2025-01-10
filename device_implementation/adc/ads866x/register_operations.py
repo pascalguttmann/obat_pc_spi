@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Optional, Tuple
+from typing import Any, List, Optional, Tuple
 from copy import deepcopy
 from bitarray import bitarray
 from warnings import warn
@@ -30,6 +30,24 @@ class Ads866xSingleTransferOperation(SingleTransferOperation):
             response=response,
             response_required=response_required,
         )
+
+    def _parse_response(self, rsp: bitarray) -> Any:
+        """This method is used to parse the response of type bitarray into the
+        desired datatype, which is appropriate for the SingleTransferOperation.
+
+        Implements the default _parse_response() method for all
+        Ads866xSingleTransferOperations to return 'None'. Should be
+        overwritten, by operations that require response parsing.
+
+        :param rsp: bitarray response of spi transfer.
+        :return: None
+        """
+        if not len(rsp) == 32:
+            raise ValueError(
+                f"Ads866xSingleTransferOperation expected 32-Bit response, but got {rsp=}"
+            )
+
+        return None
 
     def check_op(self, op: bitarray):
         if len(op) != 5:
@@ -119,6 +137,26 @@ class ReadHword(Ads866xSingleTransferOperation):
             response_required=True,
         )
 
+    def _parse_response(self, rsp: bitarray) -> Any:
+        """This method is used to parse the response of type bitarray into the
+        desired datatype, which is appropriate for the SingleTransferOperation.
+
+        :param rsp: bitarray response of spi transfer.
+        :return: 16-Bit bitarray containing halfword register data.
+        """
+        if len(rsp) != 32:
+            raise ValueError(f"ReadHword expected 32-Bit response, but got {rsp=}")
+
+        register_data = rsp[0:16]
+        zeros = rsp[16:32]
+
+        if any(zeros):
+            raise ValueError(
+                f"ReadHword expected 16-Bit trailing zeros in response, but got {rsp=}"
+            )
+
+        return register_data
+
 
 class WriteHword(Ads866xSingleTransferOperation):
     """Write a half word read operation"""
@@ -158,6 +196,25 @@ class Ads866xWordOperation(SequenceTransferOperation):
             addr_upper, addr_lower, data_upper, data_lower
         )
         super().__init__([upper_hword, lower_hword])
+
+    def _parse_response(self, operations_rsp: List[Any]) -> Any:
+        """This method is used to parse the response of type bitarray into the
+        desired datatype, which is appropriate for the SingleTransferOperation.
+
+        Implements the default _parse_response() method for all
+        Ads866xWordOperation to return 'None'. Should be overwritten, by
+        operations that require response parsing.
+
+        :param operations_rsp: List of get_parsed_response() of sub Operations
+        of self (SequenceTransferOperation).
+        :return: None
+        """
+        if not len(operations_rsp) == 2:
+            raise ValueError(
+                f"Ads866xWordOperation expected list of two responses, but got {operations_rsp=}"
+            )
+
+        return None
 
     @abstractmethod
     def _create_upper_and_lower_operation(
@@ -238,7 +295,7 @@ class SetWord(Ads866xWordOperation):
 
 
 class ReadWord(Ads866xWordOperation):
-    """Read a word read operation"""
+    """Read a word operation"""
 
     def __init__(self, addr: bitarray):
         """Read the data of the word at address 'addr'.
@@ -259,9 +316,38 @@ class ReadWord(Ads866xWordOperation):
         _, _ = data_upper, data_lower
         return (ReadHword(addr_upper), ReadHword(addr_lower))
 
+    def _parse_response(self, operations_rsp: List[Any]) -> Any:
+        """This method is used to parse the response of type bitarray into the
+        desired datatype, which is appropriate for the SingleTransferOperation.
+
+        :param operations_rsp: List of get_parsed_response() of sub Operations
+        of self (SequenceTransferOperation).
+        :return: 32-Bit bitarray containing word register data.
+        """
+        if not len(operations_rsp) == 2:
+            raise ValueError(
+                f"ReadWord expected list of two responses, but got {operations_rsp=}"
+            )
+        for op_rsp in operations_rsp:
+            if not isinstance(op_rsp, bitarray):
+                raise ValueError(
+                    f"ReadWord expected sub operations to return bitarrays, but got {type(op_rsp)=}"
+                )
+            if not len(op_rsp) == 16:
+                raise ValueError(
+                    f"ReadWord expected sub operations 16-Bit bitarray, but got {len(op_rsp)=}"
+                )
+
+        upper_hword = operations_rsp[0]
+        lower_hword = operations_rsp[1]
+
+        word = upper_hword + lower_hword
+
+        return word
+
 
 class WriteWord(Ads866xWordOperation):
-    """Write a word read operation"""
+    """Write a word operation"""
 
     def __init__(self, addr: bitarray, data: bitarray):
         """Write the data of the word at address 'addr'.
@@ -281,3 +367,51 @@ class WriteWord(Ads866xWordOperation):
         """Create and return a tuple of two Ads866xSingleTransferOperations
         which write the upper and lower data to the corresponding address."""
         return (WriteHword(addr_upper, data_upper), WriteHword(addr_lower, data_lower))
+
+
+class WriteVerifyWord(SequenceTransferOperation):
+    """Write a word and verify written data by readback."""
+
+    def __init__(self, addr: bitarray, data: bitarray):
+        """Write the data of the word at address 'addr'.
+
+        :param addr: 9-bit addr ofword
+        :param data: 32-bit data
+        """
+        ops = []
+        ops.append(WriteWord(addr=addr, data=data).get_single_transfer_operations())
+        ops.append(ReadWord(addr=addr).get_single_transfer_operations())
+
+        self._expected_data = data
+        super().__init__(ops)
+
+    def _parse_response(self, operations_rsp: List[Any]) -> Any:
+        """This method is used to parse the response of type bitarray into the
+        desired datatype, which is appropriate for the SingleTransferOperation.
+
+        :param operations_rsp: List of get_parsed_response() of sub Operations
+        of self (SequenceTransferOperation).
+        :return: bool, True if verification successful, False otherwise
+        """
+        if not len(operations_rsp) == 2:
+            raise ValueError(
+                f"WriteVerifyWord expected list of two responses, but got {operations_rsp=}"
+            )
+
+        write_rsp = operations_rsp[0]
+        if write_rsp is not None:
+            raise ValueError(
+                f"WriteVerifyWord expected WriteWord to return 'None', but got {write_rsp=}"
+            )
+
+        read_rsp = operations_rsp[1]
+        if not isinstance(read_rsp, bitarray):
+            raise ValueError(
+                f"WriteVerifyWord expected sub operations to return bitarrays, but got {type(read_rsp)=}"
+            )
+        if not len(read_rsp) == 32:
+            raise ValueError(
+                f"WriteVerifyWord expected sub operations 32-Bit bitarray, but got {len(read_rsp)=}"
+            )
+
+        return self._expected_data == read_rsp
