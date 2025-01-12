@@ -3,6 +3,7 @@ import unittest
 from bitarray import bitarray
 from typing import List, Tuple, Any
 
+from util import reverse_string, bitarray_to_uint
 from single_transfer_operation import SingleTransferOperation
 from sequence_transfer_operation import SequenceTransferOperation
 
@@ -20,18 +21,18 @@ class ReadChannel(SingleTransferOperation):
         read_opcode = "0001"
         channel_opcode = "101"
         channel = bin(channel_id)[2:]
-        command = bitarray(read_opcode + channel_opcode + channel)
+        command = bitarray(reverse_string(read_opcode + channel_opcode + channel))
 
         super().__init__(command, response=None, response_required=True)
 
     def _parse_response(self, rsp: bitarray) -> Any:
-        read_success_prefix = bitarray("0001")
+        read_success_prefix = bitarray(reverse_string("0001"))
 
-        if not read_success_prefix == rsp[0:4]:
+        if not read_success_prefix == rsp[4:8]:
             raise RuntimeError("ReadChannel failed on HW.")
 
-        uint4_value = rsp[4:8]
-        value: int = int(uint4_value.to01(), base=2)
+        uint4_value = rsp[0:4]
+        value: int = bitarray_to_uint(uint4_value)
         return value
 
 
@@ -69,7 +70,7 @@ class TestReadAllChannels(unittest.TestCase):
 
     def test_get_parsed_response_002(self):
         rc = ReadAllChannels()
-        rsp = bitarray("0001" + "1101")
+        rsp = bitarray(reverse_string("0001" + "1101"))
         for op in rc.get_single_transfer_operations():
             op.set_response(rsp)
         val = rc.get_parsed_response()

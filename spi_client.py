@@ -4,6 +4,7 @@ import time
 import threading
 from bitarray import bitarray
 
+from util import reverse_string
 from spi_driver_ipc import (
     b64_client_ipc as ipc,
     client_read_pipe_end,
@@ -86,13 +87,15 @@ class SpiClient:
 
     def _transfer_spi_channel(self, spi_channel: SpiChannel) -> None:
         op_req = next(spi_channel.spi_operation_request_iterator)
-        tx_bytearray = bytearray(op_req.operation.get_command().tobytes())
+        tx_bytearray = bytearray(op_req.operation.get_command()[::-1].tobytes())
 
         self._write_to_spi_server(spi_channel.cs, tx_bytearray)
         rx_bytearray = self._read_from_spi_server()
 
         if op_req.operation.get_response_required():
-            rsp = bitarray("".join(format(byte, "08b") for byte in rx_bytearray))
+            rsp = bitarray(
+                reverse_string("".join(format(byte, "08b") for byte in rx_bytearray))
+            )
             op_req.operation.set_response(rsp)
         else:
             _ = rx_bytearray

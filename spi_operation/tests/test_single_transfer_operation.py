@@ -2,13 +2,14 @@ import unittest
 
 from bitarray import bitarray
 
+from util import reverse_string
 from single_transfer_operation import SingleTransferOperation
 
 
 class TestSingleTransferOperation(unittest.TestCase):
-    op_cmd_10_bit = bitarray("0001000100")
-    op_rsp_10_bit = bitarray("1000100010")
-    op_rsp_8_bit = bitarray("00001111")
+    op_cmd_10_bit = bitarray(reverse_string("0001000100"))
+    op_rsp_10_bit = bitarray(reverse_string("1000100010"))
+    op_rsp_8_bit = bitarray(reverse_string("00001111"))
 
     def test_operation_init_001(self):
         op = SingleTransferOperation(self.op_cmd_10_bit)

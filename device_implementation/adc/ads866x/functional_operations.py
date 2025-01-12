@@ -2,6 +2,7 @@ from typing import Any, List
 from bitarray import bitarray
 from enum import Enum
 
+from util import bitarray_to_uint
 from spi_operation import SequenceTransferOperation
 import register_operations as op
 import registers as reg
@@ -163,26 +164,35 @@ class ReadVoltage(op.Ads866xSingleTransferOperation):
         match input_range:
             case Ads866xInputRange.BIPOLAR_12V288:
                 sens_V_per_lsb = 0.006
+                n_offset = 2**11
             case Ads866xInputRange.BIPOLAR_10V24:
                 sens_V_per_lsb = 0.005
+                n_offset = 2**11
             case Ads866xInputRange.BIPOLAR_6V144:
                 sens_V_per_lsb = 0.003
+                n_offset = 2**11
             case Ads866xInputRange.BIPOLAR_5V12:
                 sens_V_per_lsb = 0.0025
+                n_offset = 2**11
             case Ads866xInputRange.BIPOLAR_2V56:
                 sens_V_per_lsb = 0.00125
+                n_offset = 2**11
             case Ads866xInputRange.UNIPOLAR_12V288:
                 sens_V_per_lsb = 0.003
+                n_offset = 0
             case Ads866xInputRange.UNIPOLAR_10V24:
                 sens_V_per_lsb = 0.0025
+                n_offset = 0
             case Ads866xInputRange.UNIPOLAR_6V144:
                 sens_V_per_lsb = 0.0015
+                n_offset = 0
             case Ads866xInputRange.UNIPOLAR_5V12:
                 sens_V_per_lsb = 0.00125
+                n_offset = 0
             case _:
                 raise ValueError(f"ReadVoltage Unknown input_range {input_range}.")
 
-        return float(sens_V_per_lsb * int("".join(reversed(conv_result.to01())), 2))
+        return float(sens_V_per_lsb * (bitarray_to_uint(conv_result) - n_offset))
 
     def _check_even_parity(self, ba: bitarray) -> bool:
         return ba.count() % 2 == 0

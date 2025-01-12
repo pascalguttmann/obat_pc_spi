@@ -4,6 +4,7 @@ import time
 from bitarray import bitarray
 from typing import Any
 
+from util import reverse_string
 from spi_client import SpiClient, SpiChannel
 from spi_server import SpiServer
 from spi_master.virtual.virtual import Virtual
@@ -13,7 +14,9 @@ from spi_operation import SingleTransferOperation
 
 class TestSingleTransferOperation(SingleTransferOperation):
     def __init__(self) -> None:
-        super().__init__(bitarray("1111000011001100"), response_required=True)
+        super().__init__(
+            bitarray(reverse_string("1111000011001100")), response_required=True
+        )
         return None
 
     def _parse_response(self, rsp: bitarray) -> Any:

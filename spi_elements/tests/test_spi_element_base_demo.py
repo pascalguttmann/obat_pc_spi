@@ -4,6 +4,7 @@ import unittest
 from bitarray import bitarray
 from itertools import accumulate
 
+from util import reverse_string
 from spi_element_base import SpiElementBase
 from spi_operation import SingleTransferOperation
 from spi_elements.async_return import AsyncReturn
@@ -15,16 +16,16 @@ from spi_elements.spi_operation_request_iterator import (
 
 class DemoAdcNop(SingleTransferOperation):
     def __init__(self):
-        super().__init__(bitarray("00010001"), None, False)
+        super().__init__(bitarray(reverse_string("00010001")), None, False)
         return
 
 
 class DemoAdcReadChannelOp(SingleTransferOperation):
     def __init__(self, id: int):
         if id == 0:
-            super().__init__(bitarray("00000000"))
+            super().__init__(bitarray(reverse_string("00000000")))
         elif id == 1:
-            super().__init__(bitarray("00000001"))
+            super().__init__(bitarray(reverse_string("00000001")))
         else:
             raise ValueError("id must be 0 or 1")
 
