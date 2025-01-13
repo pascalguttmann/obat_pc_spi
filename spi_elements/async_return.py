@@ -4,7 +4,7 @@ import threading
 
 class AsyncReturn:
     def __init__(self, ext_callback: Optional[Callable[..., None]] = None) -> None:
-        self._callback = self._wrap_callback(ext_callback)
+        self._callback = ext_callback
         self._callback_finished = threading.Event()
         self._result = None
 
@@ -28,7 +28,7 @@ class AsyncReturn:
         return self._result
 
     def get_callback(self) -> Callable[..., None]:
-        return self._callback
+        return self._wrap_callback(self._callback)
 
     def is_finished(self) -> bool:
         return self._callback_finished.is_set()
@@ -38,3 +38,6 @@ class AsyncReturn:
             return self._result
         else:
             raise RuntimeError("AsyncReturn: Result not available yet.")
+
+    def __repr__(self) -> str:
+        return f"AsyncReturn(is_finished={self._callback_finished.is_set()}, result={self._result}, callback={self._callback})"

@@ -15,7 +15,7 @@ def callback(*args, **kw_args):
 class TestAsyncReturn(unittest.TestCase):
     def test_init(self):
         ar = AsyncReturn(callback)
-        self.assertNotEqual(ar._callback, callback)
+        self.assertEqual(ar._callback, callback)
         self.assertFalse(ar._callback_finished.is_set())
         self.assertIsNone(ar._result)
 
