@@ -5,7 +5,7 @@ from typing import List, TypeVar, Any
 from queue import Queue, Empty
 from threading import RLock
 
-from spi_operation_request_iterator import (
+from spi_elements.spi_operation_request_iterator import (
     SpiOperationRequestIteratorBase,
     SingleTransferOperationRequest,
     SequenceTransferOperationRequest,

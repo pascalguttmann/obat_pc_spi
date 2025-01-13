@@ -8,7 +8,7 @@ from util import reverse_string
 from spi_element_base import SpiElementBase
 from spi_operation import SingleTransferOperation
 from spi_elements.async_return import AsyncReturn
-from spi_elements import (
+from spi_elements.spi_operation_request_iterator import (
     SpiOperationRequestIteratorBase,
     SingleTransferOperationRequest,
 )
