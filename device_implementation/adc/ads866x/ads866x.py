@@ -12,12 +12,45 @@ Datasheet: https://www.ti.com/lit/ds/symlink/ads8661.pdf
 """
 
 from adc_base import AdcBase
+from typing import Callable, Optional, Any
+
+from functional_operations import Initialize, ReadVoltage, Ads866xInputRange
+from spi_elements.async_return import AsyncReturn
+from spi_elements.spi_operation_request_iterator import (
+    SequenceTransferOperationRequest,
+    SingleTransferOperationRequest,
+)
 
 
 class Ads866x(AdcBase):
-    pass
+    def __init__(self) -> None:
+        super().__init__()
 
-    # SDO-0 single output for daisychain, with external clock
-    # SDO_CTL_REG bits 7-0 program to 0x00
-    #
-    # conversion start at rising edge of CS.
+    def initialize(
+        self, callback: Optional[Callable[..., None]] = None, *args, **kwargs
+    ) -> AsyncReturn:
+        """Adc device must implement the behavior to initialize the hardware
+        and enable subsequent calls to other methods of the adc."""
+        ar = AsyncReturn(callback)
+
+        self._put_unprocessed_operation_request(
+            SequenceTransferOperationRequest(
+                operation=Initialize(Ads866xInputRange.UNIPOLAR_5V12),
+                callback=ar.get_callback(),
+            ),
+        )
+        return ar
+
+    def read(
+        self, callback: Optional[Callable[..., None]] = None, *args, **kwargs
+    ) -> AsyncReturn:
+        """Read the quantizied analog voltage(s) and return the voltage as float."""
+        ar = AsyncReturn(callback)
+
+        self._put_unprocessed_operation_request(
+            SingleTransferOperationRequest(
+                operation=ReadVoltage(),
+                callback=ar.get_callback(),
+            ),
+        )
+        return ar
