@@ -4,25 +4,25 @@ from enum import Enum
 
 from util import bitarray_to_uint
 from spi_operation import SequenceTransferOperation
-import register_operations as op
-import registers as reg
+import device_implementation.adc.ads866x.register_operations as op
+import device_implementation.adc.ads866x.registers as reg
 
 
 class Ads866xInputRange(Enum):
-    BIPOLAR_12V288 = reg.RangeSelReg.RANGE_SEL.const["BIPOLAR_12V288"]
-    BIPOLAR_10V24 = reg.RangeSelReg.RANGE_SEL.const["BIPOLAR_10V24"]
-    BIPOLAR_6V144 = reg.RangeSelReg.RANGE_SEL.const["BIPOLAR_6V144"]
-    BIPOLAR_5V12 = reg.RangeSelReg.RANGE_SEL.const["BIPOLAR_5V12"]
-    BIPOLAR_2V56 = reg.RangeSelReg.RANGE_SEL.const["BIPOLAR_2V56"]
-    UNIPOLAR_12V288 = reg.RangeSelReg.RANGE_SEL.const["UNIPOLAR_12V288"]
-    UNIPOLAR_10V24 = reg.RangeSelReg.RANGE_SEL.const["UNIPOLAR_10V24"]
-    UNIPOLAR_6V144 = reg.RangeSelReg.RANGE_SEL.const["UNIPOLAR_6V144"]
-    UNIPOLAR_5V12 = reg.RangeSelReg.RANGE_SEL.const["UNIPOLAR_5V12"]
+    BIPOLAR_12V288 = reg.RangeSelReg().RANGE_SEL.const["BIPOLAR_12V288"]
+    BIPOLAR_10V24 = reg.RangeSelReg().RANGE_SEL.const["BIPOLAR_10V24"]
+    BIPOLAR_6V144 = reg.RangeSelReg().RANGE_SEL.const["BIPOLAR_6V144"]
+    BIPOLAR_5V12 = reg.RangeSelReg().RANGE_SEL.const["BIPOLAR_5V12"]
+    BIPOLAR_2V56 = reg.RangeSelReg().RANGE_SEL.const["BIPOLAR_2V56"]
+    UNIPOLAR_12V288 = reg.RangeSelReg().RANGE_SEL.const["UNIPOLAR_12V288"]
+    UNIPOLAR_10V24 = reg.RangeSelReg().RANGE_SEL.const["UNIPOLAR_10V24"]
+    UNIPOLAR_6V144 = reg.RangeSelReg().RANGE_SEL.const["UNIPOLAR_6V144"]
+    UNIPOLAR_5V12 = reg.RangeSelReg().RANGE_SEL.const["UNIPOLAR_5V12"]
 
 
 class Ads866xGpoVal(Enum):
-    HIGH = reg.SdoCtlReg.GPO_VAL.const["HIGH"]
-    LOW = reg.SdoCtlReg.GPO_VAL.const["LOW"]
+    HIGH = reg.SdoCtlReg().GPO_VAL.const["HIGH"]
+    LOW = reg.SdoCtlReg().GPO_VAL.const["LOW"]
 
 
 class Initialize(SequenceTransferOperation):

@@ -11,10 +11,11 @@ Programmable, Bipolar Input Ranges
 Datasheet: https://www.ti.com/lit/ds/symlink/ads8661.pdf
 """
 
-from adc_base import AdcBase
+from device_implementation.adc import AdcBase
 from typing import Callable, Optional
 
-from functional_operations import (
+from device_implementation.adc.ads866x.operations import (
+    Nop,
     Initialize,
     ReadVoltage,
     Ads866xInputRange,
@@ -32,6 +33,12 @@ from spi_elements.spi_operation_request_iterator import (
 class Ads866x(AdcBase):
     def __init__(self) -> None:
         super().__init__()
+
+    def _get_default_operation_request(self) -> SingleTransferOperationRequest:
+        return SingleTransferOperationRequest(
+            operation=Nop(),
+            callback=None,
+        )
 
     def initialize(
         self,
