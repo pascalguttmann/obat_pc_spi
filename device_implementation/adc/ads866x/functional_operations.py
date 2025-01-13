@@ -20,11 +20,16 @@ class Ads866xInputRange(Enum):
     UNIPOLAR_5V12 = reg.RangeSelReg.RANGE_SEL.const["UNIPOLAR_5V12"]
 
 
+class Ads866xGpoVal(Enum):
+    HIGH = reg.SdoCtlReg.GPO_VAL.const["HIGH"]
+    LOW = reg.SdoCtlReg.GPO_VAL.const["LOW"]
+
+
 class Initialize(SequenceTransferOperation):
     """Initialize the Ads866x adc"""
 
     def __init__(self, input_range: Ads866xInputRange):
-        """Write the data of the word at address 'addr'.
+        """Initialize the adc with the specified input range.
 
         :param input_range: InputRange enum specifying the input range setting.
         """
@@ -160,7 +165,6 @@ class ReadVoltage(op.Ads866xSingleTransferOperation):
         _ = avdd_alaram
         _ = input_alarm
 
-        n = 2**12
         match input_range:
             case Ads866xInputRange.BIPOLAR_12V288:
                 sens_V_per_lsb = 0.006
@@ -196,3 +200,27 @@ class ReadVoltage(op.Ads866xSingleTransferOperation):
 
     def _check_even_parity(self, ba: bitarray) -> bool:
         return ba.count() % 2 == 0
+
+
+class SetGpo(op.SetHword):
+    """Set the general purpose output of the ADC."""
+
+    def __init__(self):
+        SDO_CTL_REG = reg.SdoCtlReg()
+        SDO_CTL_REG.GPO_VAL.data = bitarray("1")
+
+        super().__init__(
+            addr=SDO_CTL_REG.address_lower_halfword_ba, data=SDO_CTL_REG.data[0:16]
+        )
+
+
+class ClearGpo(op.ClearHword):
+    """Clear the general purpose output of the ADC."""
+
+    def __init__(self):
+        SDO_CTL_REG = reg.SdoCtlReg()
+        SDO_CTL_REG.GPO_VAL.data = bitarray("1")
+
+        super().__init__(
+            addr=SDO_CTL_REG.address_lower_halfword_ba, data=SDO_CTL_REG.data[0:16]
+        )
