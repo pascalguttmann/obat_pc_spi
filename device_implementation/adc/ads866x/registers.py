@@ -18,7 +18,9 @@ class Ads866xRegister:
     address_lower_halfword_ba: bitarray = field(init=False)
     address_upper_halfword_ba: bitarray = field(init=False)
     data: bitarray = field(
-        default=bitarray(reverse_string("00000000 00000000 00000000 00000000"))
+        default_factory=lambda: bitarray(
+            reverse_string("00000000 00000000 00000000 00000000")
+        ),
     )
 
     def __post_init__(self):
