@@ -83,7 +83,7 @@ class SpiElementBase(SpiOperationRequestIteratorBase):
                     def collect_ops_responses(response: Any):
                         responses.append(response)
                         if len(responses) == len(ops) and sequence_callback:
-                            sequence_callback(*responses)
+                            sequence_callback(responses)
                         return None
 
                     for op in ops:
