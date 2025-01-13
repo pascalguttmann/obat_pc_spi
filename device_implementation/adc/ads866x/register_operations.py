@@ -24,10 +24,12 @@ class Ads866xSingleTransferOperation(SingleTransferOperation):
         response_required: bool = True,
     ):
         super().__init__(
-            command=self.check_op(op)
-            + self.check_byte_selector(byte_selector)
-            + self.check_addr(addr)
-            + self.check_data(data),
+            command=concat_bitarray(
+                self.check_data(data),
+                self.check_addr(addr),
+                self.check_byte_selector(byte_selector),
+                self.check_op(op),
+            ),
             response=response,
             response_required=response_required,
         )

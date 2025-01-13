@@ -1,5 +1,7 @@
 import unittest
 
+from bitarray import bitarray
+
 from device_implementation.adc.ads866x import (
     Ads866x,
     Ads866xInputRange,
@@ -8,10 +10,21 @@ from device_implementation.adc.ads866x import (
     Nop,
     ReadVoltage,
 )
-from spi_elements.spi_operation_request_iterator import SingleTransferOperationRequest
+from device_implementation.adc.ads866x import Ads866xSingleTransferOperation
 
 
 class TestAds866x(unittest.TestCase):
+    def test_ads866x_single_transfer_operation(self):
+        st_op = Ads866xSingleTransferOperation(
+            op=bitarray("10000"),
+            byte_selector=bitarray("00"),
+            addr=bitarray("010101010"),
+            data=bitarray("00000000 00000000"),
+        )
+        self.assertEqual(
+            st_op.get_command(), bitarray("0000000000000000 010101010 00 10000")
+        )
+
     def test_init(self):
         _ = Ads866x()
 
