@@ -4,11 +4,18 @@ from dataclasses import dataclass
 from typing import Callable, Optional, TypeVar
 
 from spi_operation.single_transfer_operation import SingleTransferOperation
+from spi_operation.sequence_transfer_operation import SequenceTransferOperation
 
 
 @dataclass
 class SingleTransferOperationRequest:
     operation: SingleTransferOperation
+    callback: Optional[Callable[..., None]] = None
+
+
+@dataclass
+class SequenceTransferOperationRequest:
+    operation: SequenceTransferOperation
     callback: Optional[Callable[..., None]] = None
 
 
@@ -32,4 +39,6 @@ class SpiOperationRequestIteratorBase(ABC):
         """
 
 
-SpiOperationRequestIterator = TypeVar("SpiOperationRequestIterator", bound=SpiOperationRequestIteratorBase)
+SpiOperationRequestIterator = TypeVar(
+    "SpiOperationRequestIterator", bound=SpiOperationRequestIteratorBase
+)
