@@ -1,4 +1,4 @@
-from spi_driver_ipc import (
+from spi_client_server.spi_driver_ipc import (
     client_to_server_pipe,
     server_to_client_pipe,
     server_read_pipe_end,

@@ -5,8 +5,8 @@ from bitarray import bitarray
 from typing import Any
 
 from util import reverse_string
-from spi_client import SpiClient, SpiChannel
-from spi_server import SpiServer
+from spi_client_server.spi_client import SpiClient, SpiChannel
+from spi_client_server.spi_server import SpiServer
 from spi_master.virtual.virtual import Virtual
 from spi_elements.spi_element_base import SpiElementBase, SingleTransferOperationRequest
 from spi_operation import SingleTransferOperation

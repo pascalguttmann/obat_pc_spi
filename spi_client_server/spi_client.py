@@ -5,14 +5,14 @@ import threading
 from bitarray import bitarray
 
 from util import reverse_string
-from spi_driver_ipc import (
+from spi_client_server.spi_driver_ipc import (
     b64_client_ipc as ipc,
     client_read_pipe_end,
     client_write_pipe_end,
     pack_server_command,
     unpack_server_response,
 )
-from spi_server import SpiServer
+from spi_client_server.spi_server import SpiServer
 from spi_elements import SpiOperationRequestIteratorBase
 
 
