@@ -15,15 +15,15 @@ import copy
 import sys
 
 
-from ch341.constants import (
+from spi_master.ch341.constants import (
     SPI_CS_STATE_USED,
     SPI_OUTPUT_MODE_1LINE,
     SPI_OUTPUT_MODE_2LINE,
     SPI_DATA_MODE_LSB,
     SPI_DATA_MODE_MSB,
 )
-from ch341.dll import ch341dll
-from spi_master_base import SpiMasterBase
+from spi_master.ch341.dll import ch341dll
+from spi_master.spi_master_base import SpiMasterBase
 
 
 class CH341(SpiMasterBase):
