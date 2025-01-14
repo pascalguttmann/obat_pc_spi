@@ -5,7 +5,7 @@ from bitarray import bitarray
 
 @dataclass
 class BitfieldSpec:
-    data: bitarray
+    slice: slice
     const: dict[str, bitarray]
 
 
@@ -65,7 +65,7 @@ class DeviceIdReg(Ads866xRegister):
     def __post_init__(self):
         super().__post_init__()
         self.DEVICE_ADDR = BitfieldSpec(
-            self.data[16:20], {"DEFAULT_ADDR": bitarray(reverse_string("0000"))}
+            slice(16, 20), {"DEFAULT_ADDR": bitarray(reverse_string("0000"))}
         )
 
 
@@ -89,38 +89,38 @@ class RstPwrctlReg(Ads866xRegister):
     def __post_init__(self):
         super().__post_init__()
         self.WKEY = BitfieldSpec(
-            self.data[8:16], {"PROTECTION_KEY": uint_to_bitarray(0x69, 8)}
+            slice(8, 16), {"PROTECTION_KEY": uint_to_bitarray(0x69, 8)}
         )
         self.VDD_AL_DIS = BitfieldSpec(
-            self.data[5:6],
+            slice(5, 6),
             {
                 "VDD_AL_ENABLED": bitarray(reverse_string("0")),
                 "VDD_AL_DISABLED": bitarray(reverse_string("1")),
             },
         )
         self.IN_AL_DIS = BitfieldSpec(
-            self.data[4:5],
+            slice(4, 5),
             {
                 "IN_AL_ENABLED": bitarray(reverse_string("0")),
                 "IN_AL_DISABLED": bitarray(reverse_string("1")),
             },
         )
         self.RSTN_APP = BitfieldSpec(
-            self.data[2:3],
+            slice(2, 3),
             {
                 "RSTN_POR": bitarray(reverse_string("0")),
                 "RSTN_APP": bitarray(reverse_string("1")),
             },
         )
         self.NAP_EN = BitfieldSpec(
-            self.data[1:2],
+            slice(1, 2),
             {
                 "NAP_DISABLED": bitarray(reverse_string("0")),
                 "NAP_ENABLED": bitarray(reverse_string("1")),
             },
         )
         self.PWRDN = BitfieldSpec(
-            self.data[0:1],
+            slice(0, 1),
             {
                 "MODE_ACTIVE": bitarray(reverse_string("0")),
                 "MODE_PWR_DOWN": bitarray(reverse_string("1")),
@@ -143,7 +143,7 @@ class SdiCtlReg(Ads866xRegister):
     def __post_init__(self):
         super().__post_init__()
         self.SDI_MODE = BitfieldSpec(
-            self.data[0:2],
+            slice(0, 2),
             {
                 "SPI_MODE_0_CPOL_0_CPHA_0": bitarray(reverse_string("00")),
                 "SPI_MODE_1_CPOL_0_CPHA_1": bitarray(reverse_string("01")),
@@ -171,14 +171,14 @@ class SdoCtlReg(Ads866xRegister):
     def __post_init__(self):
         super().__post_init__()
         self.GPO_VAL = BitfieldSpec(
-            self.data[12:13],
+            slice(12, 13),
             {
                 "LOW": bitarray(reverse_string("0")),
                 "HIGH": bitarray(reverse_string("1")),
             },
         )
         self.SDO1_CONFIG = BitfieldSpec(
-            self.data[8:10],
+            slice(8, 10),
             {
                 "SDO1_TRISTATE": bitarray(reverse_string("00")),
                 "SDO1_ALARM": bitarray(reverse_string("01")),
@@ -187,14 +187,14 @@ class SdoCtlReg(Ads866xRegister):
             },
         )
         self.SSYNC_CLK = BitfieldSpec(
-            self.data[6:7],
+            slice(6, 7),
             {
                 "CLK_EXT": bitarray(reverse_string("0")),
                 "CLK_INT": bitarray(reverse_string("1")),
             },
         )
         self.SDO_MODE = BitfieldSpec(
-            self.data[0:2],
+            slice(0, 2),
             {
                 "SDO_DEFAULT_CLK": bitarray(reverse_string("00")),
                 "SDO_INTERNAL_CLK": bitarray(reverse_string("11")),
@@ -224,56 +224,56 @@ class DataOutCtlReg(Ads866xRegister):
     def __post_init__(self):
         super().__post_init__()
         self.DEVICE_ADDR_INCL = BitfieldSpec(
-            self.data[14:15],
+            slice(14, 15),
             {
                 "EXCLUDE": bitarray(reverse_string("0")),
                 "INCLUDE": bitarray(reverse_string("1")),
             },
         )
         self.VDD_ACTIVE_L_ALARM_INCL = BitfieldSpec(
-            self.data[13:14],
+            slice(13, 14),
             {
                 "EXCLUDE": bitarray(reverse_string("0")),
                 "INCLUDE": bitarray(reverse_string("1")),
             },
         )
         self.VDD_ACTIVE_H_ALARM_INCL = BitfieldSpec(
-            self.data[12:13],
+            slice(12, 13),
             {
                 "EXCLUDE": bitarray(reverse_string("0")),
                 "INCLUDE": bitarray(reverse_string("1")),
             },
         )
         self.IN_ACTIVE_L_ALARM_INCL = BitfieldSpec(
-            self.data[11:12],
+            slice(11, 12),
             {
                 "EXCLUDE": bitarray(reverse_string("0")),
                 "INCLUDE": bitarray(reverse_string("1")),
             },
         )
         self.IN_ACTIVE_H_ALARM_INCL = BitfieldSpec(
-            self.data[10:11],
+            slice(10, 11),
             {
                 "EXCLUDE": bitarray(reverse_string("0")),
                 "INCLUDE": bitarray(reverse_string("1")),
             },
         )
         self.RANGE_INCL = BitfieldSpec(
-            self.data[8:9],
+            slice(8, 9),
             {
                 "EXCLUDE": bitarray(reverse_string("0")),
                 "INCLUDE": bitarray(reverse_string("1")),
             },
         )
         self.PAR_EN = BitfieldSpec(
-            self.data[3:4],
+            slice(3, 4),
             {
                 "EXCLUDE": bitarray(reverse_string("0")),
                 "INCLUDE": bitarray(reverse_string("1")),
             },
         )
         self.DATA_VAL = BitfieldSpec(
-            self.data[0:3],
+            slice(0, 3),
             {
                 "CONVERSION_RESULT": bitarray(reverse_string("000")),
                 "ALL_ZEROS": bitarray(reverse_string("100")),
@@ -300,14 +300,14 @@ class RangeSelReg(Ads866xRegister):
     def __post_init__(self):
         super().__post_init__()
         self.INTREF_DIS = BitfieldSpec(
-            self.data[6:7],
+            slice(6, 7),
             {
                 "INTREF_ENABLE": bitarray(reverse_string("0")),
                 "INTREF_DISABLE": bitarray(reverse_string("1")),
             },
         )
         self.RANGE_SEL = BitfieldSpec(
-            self.data[0:4],
+            slice(0, 4),
             {
                 "BIPOLAR_12V288": bitarray(reverse_string("0000")),
                 "BIPOLAR_10V24": bitarray(reverse_string("0001")),
@@ -345,63 +345,63 @@ class AlarmReg(Ads866xRegister):
     def __post_init__(self):
         super().__post_init__()
         self.ACTIVE_VDD_L_FLAG = BitfieldSpec(
-            self.data[15:16],
+            slice(15, 16),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.ACTIVE_VDD_H_FLAG = BitfieldSpec(
-            self.data[14:15],
+            slice(14, 15),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.ACTIVE_IN_L_FLAG = BitfieldSpec(
-            self.data[11:12],
+            slice(11, 12),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.ACTIVE_IN_H_FLAG = BitfieldSpec(
-            self.data[10:11],
+            slice(10, 11),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.TRP_VDD_L_FLAG = BitfieldSpec(
-            self.data[7:8],
+            slice(7, 8),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.TRP_VDD_H_FLAG = BitfieldSpec(
-            self.data[6:7],
+            slice(6, 7),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.TRP_IN_L_FLAG = BitfieldSpec(
-            self.data[5:6],
+            slice(5, 6),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.TRP_IN_H_FLAG = BitfieldSpec(
-            self.data[4:5],
+            slice(4, 5),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
             },
         )
         self.OVW_ALARM = BitfieldSpec(
-            self.data[0:1],
+            slice(0, 1),
             {
                 "NO_ALARM": bitarray(reverse_string("0")),
                 "ALARM": bitarray(reverse_string("1")),
@@ -425,7 +425,7 @@ class AlarmHThReg(Ads866xRegister):  # Alarm hysteresis and high threshold
     def __post_init__(self):
         super().__post_init__()
         self.INP_ALARM_HYST = BitfieldSpec(
-            self.data[30:32],
+            slice(30, 32),
             {
                 "HYST_00": bitarray(reverse_string("00")),
                 "HYST_01": bitarray(reverse_string("01")),
@@ -434,7 +434,7 @@ class AlarmHThReg(Ads866xRegister):  # Alarm hysteresis and high threshold
             },
         )
         self.INP_ALARM_HIGH_TH = BitfieldSpec(
-            self.data[4:16], {"DEFAULT": uint_to_bitarray(0xFFF, 12)}
+            slice(4, 16), {"DEFAULT": uint_to_bitarray(0xFFF, 12)}
         )
 
 
@@ -453,5 +453,5 @@ class AlarmLThReg(Ads866xRegister):  # Alarm low threshold
     def __post_init__(self):
         super().__post_init__()
         self.INP_ALARM_LOW_TH = BitfieldSpec(
-            self.data[4:16], {"DEFAULT": uint_to_bitarray(0x000, 12)}
+            slice(4, 16), {"DEFAULT": uint_to_bitarray(0x000, 12)}
         )

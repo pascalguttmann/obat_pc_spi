@@ -36,7 +36,9 @@ class Initialize(SequenceTransferOperation):
         ops = []
 
         RST_PWRCTL_REG = reg.RstPwrctlReg()
-        RST_PWRCTL_REG.WKEY.data = RST_PWRCTL_REG.WKEY.const["PROTECTION_KEY"]
+        RST_PWRCTL_REG.data[RST_PWRCTL_REG.WKEY.slice] = RST_PWRCTL_REG.WKEY.const[
+            "PROTECTION_KEY"
+        ]
         ops.append(
             op.WriteHword(
                 RST_PWRCTL_REG.address_lower_halfword_ba, RST_PWRCTL_REG.data[0:16]
@@ -44,14 +46,24 @@ class Initialize(SequenceTransferOperation):
         )
 
         RST_PWRCTL_REG = reg.RstPwrctlReg()
-        RST_PWRCTL_REG.WKEY.data = RST_PWRCTL_REG.WKEY.const["PROTECTION_KEY"]
-        RST_PWRCTL_REG.VDD_AL_DIS.data = RST_PWRCTL_REG.VDD_AL_DIS.const[
-            "VDD_AL_ENABLED"
+        RST_PWRCTL_REG.data[RST_PWRCTL_REG.WKEY.slice] = RST_PWRCTL_REG.WKEY.const[
+            "PROTECTION_KEY"
         ]
-        RST_PWRCTL_REG.IN_AL_DIS.data = RST_PWRCTL_REG.IN_AL_DIS.const["IN_AL_ENABLED"]
-        RST_PWRCTL_REG.RSTN_APP.data = RST_PWRCTL_REG.RSTN_APP.const["RSTN_POR"]
-        RST_PWRCTL_REG.NAP_EN.data = RST_PWRCTL_REG.NAP_EN.const["NAP_DISABLED"]
-        RST_PWRCTL_REG.PWRDN.data = RST_PWRCTL_REG.PWRDN.const["MODE_ACTIVE"]
+        RST_PWRCTL_REG.data[RST_PWRCTL_REG.VDD_AL_DIS.slice] = (
+            RST_PWRCTL_REG.VDD_AL_DIS.const["VDD_AL_ENABLED"]
+        )
+        RST_PWRCTL_REG.data[RST_PWRCTL_REG.IN_AL_DIS.slice] = (
+            RST_PWRCTL_REG.IN_AL_DIS.const["IN_AL_ENABLED"]
+        )
+        RST_PWRCTL_REG.data[RST_PWRCTL_REG.RSTN_APP.slice] = (
+            RST_PWRCTL_REG.RSTN_APP.const["RSTN_POR"]
+        )
+        RST_PWRCTL_REG.data[RST_PWRCTL_REG.NAP_EN.slice] = RST_PWRCTL_REG.NAP_EN.const[
+            "NAP_DISABLED"
+        ]
+        RST_PWRCTL_REG.data[RST_PWRCTL_REG.PWRDN.slice] = RST_PWRCTL_REG.PWRDN.const[
+            "MODE_ACTIVE"
+        ]
         ops.append(
             op.WriteHword(
                 RST_PWRCTL_REG.address_lower_halfword_ba, RST_PWRCTL_REG.data[0:16]
@@ -59,7 +71,7 @@ class Initialize(SequenceTransferOperation):
         )
 
         SDI_CTL_REG = reg.SdiCtlReg()
-        SDI_CTL_REG.SDI_MODE.data = SDI_CTL_REG.SDI_MODE.const[
+        SDI_CTL_REG.data[SDI_CTL_REG.SDI_MODE.slice] = SDI_CTL_REG.SDI_MODE.const[
             "SPI_MODE_0_CPOL_0_CPHA_0"
         ]
         ops.append(
@@ -67,35 +79,45 @@ class Initialize(SequenceTransferOperation):
         )
 
         SDO_CTL_REG = reg.SdoCtlReg()
-        SDO_CTL_REG.GPO_VAL.data = SDO_CTL_REG.GPO_VAL.const["LOW"]
-        SDO_CTL_REG.SDO1_CONFIG.data = SDO_CTL_REG.SDO1_CONFIG.const["SDO1_GPO"]
-        SDO_CTL_REG.SSYNC_CLK.data = SDO_CTL_REG.SSYNC_CLK.const["CLK_EXT"]
-        SDO_CTL_REG.SDO_MODE.data = SDO_CTL_REG.SDO_MODE.const["SDO_DEFAULT_CLK"]
+        SDO_CTL_REG.data[SDO_CTL_REG.GPO_VAL.slice] = SDO_CTL_REG.GPO_VAL.const["LOW"]
+        SDO_CTL_REG.data[SDO_CTL_REG.SDO1_CONFIG.slice] = SDO_CTL_REG.SDO1_CONFIG.const[
+            "SDO1_GPO"
+        ]
+        SDO_CTL_REG.data[SDO_CTL_REG.SSYNC_CLK.slice] = SDO_CTL_REG.SSYNC_CLK.const[
+            "CLK_EXT"
+        ]
+        SDO_CTL_REG.data[SDO_CTL_REG.SDO_MODE.slice] = SDO_CTL_REG.SDO_MODE.const[
+            "SDO_DEFAULT_CLK"
+        ]
         ops.append(
             op.WriteVerifyWord(addr=SDO_CTL_REG.address_ba, data=SDO_CTL_REG.data)
         )
 
         DATAOUT_CTL_REG = reg.DataOutCtlReg()
-        DATAOUT_CTL_REG.DEVICE_ADDR_INCL.data = DATAOUT_CTL_REG.DEVICE_ADDR_INCL.const[
-            "INCLUDE"
-        ]
-        DATAOUT_CTL_REG.VDD_ACTIVE_L_ALARM_INCL.data = (
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.DEVICE_ADDR_INCL.slice] = (
+            DATAOUT_CTL_REG.DEVICE_ADDR_INCL.const["INCLUDE"]
+        )
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.VDD_ACTIVE_L_ALARM_INCL.slice] = (
             DATAOUT_CTL_REG.VDD_ACTIVE_L_ALARM_INCL.const["INCLUDE"]
         )
-        DATAOUT_CTL_REG.VDD_ACTIVE_H_ALARM_INCL.data = (
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.VDD_ACTIVE_H_ALARM_INCL.slice] = (
             DATAOUT_CTL_REG.VDD_ACTIVE_H_ALARM_INCL.const["INCLUDE"]
         )
-        DATAOUT_CTL_REG.IN_ACTIVE_L_ALARM_INCL.data = (
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.IN_ACTIVE_L_ALARM_INCL.slice] = (
             DATAOUT_CTL_REG.IN_ACTIVE_L_ALARM_INCL.const["INCLUDE"]
         )
-        DATAOUT_CTL_REG.IN_ACTIVE_H_ALARM_INCL.data = (
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.IN_ACTIVE_H_ALARM_INCL.slice] = (
             DATAOUT_CTL_REG.IN_ACTIVE_H_ALARM_INCL.const["INCLUDE"]
         )
-        DATAOUT_CTL_REG.RANGE_INCL.data = DATAOUT_CTL_REG.RANGE_INCL.const["INCLUDE"]
-        DATAOUT_CTL_REG.PAR_EN.data = DATAOUT_CTL_REG.PAR_EN.const["INCLUDE"]
-        DATAOUT_CTL_REG.DATA_VAL.data = DATAOUT_CTL_REG.DATA_VAL.const[
-            "CONVERSION_RESULT"
-        ]
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.RANGE_INCL.slice] = (
+            DATAOUT_CTL_REG.RANGE_INCL.const["INCLUDE"]
+        )
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.PAR_EN.slice] = (
+            DATAOUT_CTL_REG.PAR_EN.const["INCLUDE"]
+        )
+        DATAOUT_CTL_REG.data[DATAOUT_CTL_REG.DATA_VAL.slice] = (
+            DATAOUT_CTL_REG.DATA_VAL.const["CONVERSION_RESULT"]
+        )
         ops.append(
             op.WriteVerifyWord(
                 addr=DATAOUT_CTL_REG.address_ba, data=DATAOUT_CTL_REG.data
@@ -103,8 +125,10 @@ class Initialize(SequenceTransferOperation):
         )
 
         RANGE_SEL_REG = reg.RangeSelReg()
-        RANGE_SEL_REG.INTREF_DIS.data = RANGE_SEL_REG.INTREF_DIS.const["INTREF_ENABLE"]
-        RANGE_SEL_REG.RANGE_SEL.data = input_range.value
+        RANGE_SEL_REG.data[RANGE_SEL_REG.INTREF_DIS.slice] = (
+            RANGE_SEL_REG.INTREF_DIS.const["INTREF_ENABLE"]
+        )
+        RANGE_SEL_REG.data[RANGE_SEL_REG.RANGE_SEL.slice] = input_range.value
         ops.append(
             op.WriteVerifyWord(addr=RANGE_SEL_REG.address_ba, data=RANGE_SEL_REG.data)
         )
@@ -207,7 +231,7 @@ class SetGpo(op.SetHword):
 
     def __init__(self):
         SDO_CTL_REG = reg.SdoCtlReg()
-        SDO_CTL_REG.GPO_VAL.data = bitarray("1")
+        SDO_CTL_REG.data[SDO_CTL_REG.GPO_VAL.slice] = bitarray("1")
 
         super().__init__(
             addr=SDO_CTL_REG.address_lower_halfword_ba, data=SDO_CTL_REG.data[0:16]
@@ -219,7 +243,7 @@ class ClearGpo(op.ClearHword):
 
     def __init__(self):
         SDO_CTL_REG = reg.SdoCtlReg()
-        SDO_CTL_REG.GPO_VAL.data = bitarray("1")
+        SDO_CTL_REG.data[SDO_CTL_REG.GPO_VAL.slice] = bitarray("1")
 
         super().__init__(
             addr=SDO_CTL_REG.address_lower_halfword_ba, data=SDO_CTL_REG.data[0:16]

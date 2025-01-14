@@ -11,6 +11,7 @@ from device_implementation.adc.ads866x import (
     ReadVoltage,
 )
 from device_implementation.adc.ads866x import Ads866xSingleTransferOperation
+from device_implementation.adc.ads866x.registers import DeviceIdReg
 
 
 class TestAds866x(unittest.TestCase):
@@ -24,6 +25,14 @@ class TestAds866x(unittest.TestCase):
         self.assertEqual(
             st_op.get_command(), bitarray("0000000000000000 010101010 00 10000")
         )
+
+    def test_register_data_modified(self):
+        reg = DeviceIdReg()
+        reg.data[reg.DEVICE_ADDR.slice] = bitarray("1010")
+        self.assertEqual(reg.data[16], 1)
+        self.assertEqual(reg.data[17], 0)
+        self.assertEqual(reg.data[18], 1)
+        self.assertEqual(reg.data[19], 0)
 
     def test_init(self):
         _ = Ads866x()
