@@ -196,10 +196,12 @@ class ReadVoltage(op.Ads866xSingleTransferOperation):
         conv_result_parity_bit = parity_bits[1:2]
 
         if not self._check_even_parity(conv_result_parity_bit + conv_result):
-            raise ValueError("ReadVoltage expected even parity for conversion_result.")
+            raise ValueError(
+                f"ReadVoltage expected even parity for conversion_result. {rsp=}"
+            )
 
         if not self._check_even_parity(data_frame_parity_bit + rsp[8:32]):
-            raise ValueError("ReadVoltage expected even parity for frame.")
+            raise ValueError(f"ReadVoltage expected even parity for frame. {rsp=}")
 
         _ = device_addr
         _ = avdd_alaram

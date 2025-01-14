@@ -1,3 +1,4 @@
+from typing import Optional
 from dataclasses import dataclass, field
 from util import reverse_string, uint_to_bitarray
 from bitarray import bitarray
@@ -56,10 +57,10 @@ class DeviceIdReg(Ads866xRegister):
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x00, data=data)
 
     def __post_init__(self):
@@ -80,10 +81,10 @@ class RstPwrctlReg(Ads866xRegister):
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x04, data=data)
 
     def __post_init__(self):
@@ -134,10 +135,10 @@ class SdiCtlReg(Ads866xRegister):
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x08, data=data)
 
     def __post_init__(self):
@@ -162,10 +163,10 @@ class SdoCtlReg(Ads866xRegister):
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x0C, data=data)
 
     def __post_init__(self):
@@ -215,10 +216,10 @@ class DataOutCtlReg(Ads866xRegister):
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x10, data=data)
 
     def __post_init__(self):
@@ -291,10 +292,10 @@ class RangeSelReg(Ads866xRegister):
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x14, data=data)
 
     def __post_init__(self):
@@ -336,10 +337,10 @@ class AlarmReg(Ads866xRegister):
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x20, data=data)
 
     def __post_init__(self):
@@ -416,10 +417,10 @@ class AlarmHThReg(Ads866xRegister):  # Alarm hysteresis and high threshold
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=24, data=data)
 
     def __post_init__(self):
@@ -444,10 +445,10 @@ class AlarmLThReg(Ads866xRegister):  # Alarm low threshold
 
     def __init__(
         self,
-        data: bitarray = bitarray(
-            reverse_string("00000000 00000000 00000000 00000000")
-        ),
+        data: Optional[bitarray] = None,
     ):
+        if not data:
+            data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=28, data=data)
 
     def __post_init__(self):
