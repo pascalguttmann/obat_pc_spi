@@ -189,36 +189,35 @@ class ReadVoltage(op.Ads866xSingleTransferOperation):
         _ = avdd_alaram
         _ = input_alarm
 
-        match input_range:
-            case Ads866xInputRange.BIPOLAR_12V288:
-                sens_V_per_lsb = 0.006
-                n_offset = 2**11
-            case Ads866xInputRange.BIPOLAR_10V24:
-                sens_V_per_lsb = 0.005
-                n_offset = 2**11
-            case Ads866xInputRange.BIPOLAR_6V144:
-                sens_V_per_lsb = 0.003
-                n_offset = 2**11
-            case Ads866xInputRange.BIPOLAR_5V12:
-                sens_V_per_lsb = 0.0025
-                n_offset = 2**11
-            case Ads866xInputRange.BIPOLAR_2V56:
-                sens_V_per_lsb = 0.00125
-                n_offset = 2**11
-            case Ads866xInputRange.UNIPOLAR_12V288:
-                sens_V_per_lsb = 0.003
-                n_offset = 0
-            case Ads866xInputRange.UNIPOLAR_10V24:
-                sens_V_per_lsb = 0.0025
-                n_offset = 0
-            case Ads866xInputRange.UNIPOLAR_6V144:
-                sens_V_per_lsb = 0.0015
-                n_offset = 0
-            case Ads866xInputRange.UNIPOLAR_5V12:
-                sens_V_per_lsb = 0.00125
-                n_offset = 0
-            case _:
-                raise ValueError(f"ReadVoltage Unknown input_range {input_range}.")
+        if Ads866xInputRange(input_range) == Ads866xInputRange.BIPOLAR_12V288:
+            sens_V_per_lsb = 0.006
+            n_offset = 2**11
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.BIPOLAR_10V24:
+            sens_V_per_lsb = 0.005
+            n_offset = 2**11
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.BIPOLAR_6V144:
+            sens_V_per_lsb = 0.003
+            n_offset = 2**11
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.BIPOLAR_5V12:
+            sens_V_per_lsb = 0.0025
+            n_offset = 2**11
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.BIPOLAR_2V56:
+            sens_V_per_lsb = 0.00125
+            n_offset = 2**11
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.UNIPOLAR_12V288:
+            sens_V_per_lsb = 0.003
+            n_offset = 0
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.UNIPOLAR_10V24:
+            sens_V_per_lsb = 0.0025
+            n_offset = 0
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.UNIPOLAR_6V144:
+            sens_V_per_lsb = 0.0015
+            n_offset = 0
+        elif Ads866xInputRange(input_range) == Ads866xInputRange.UNIPOLAR_5V12:
+            sens_V_per_lsb = 0.00125
+            n_offset = 0
+        else:
+            raise ValueError(f"ReadVoltage Unknown input_range {input_range}.")
 
         return float(sens_V_per_lsb * (bitarray_to_uint(conv_result) - n_offset))
 
