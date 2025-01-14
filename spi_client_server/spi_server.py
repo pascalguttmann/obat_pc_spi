@@ -67,7 +67,6 @@ class SpiServer:
                 cs, spi_tx = unpack_server_command(ipc_read)
                 spi_rx = self._spi_master.transfer(cs, spi_tx)
                 ipc.write(pack_server_response(spi_rx))
-                print(f"SpiServer: {cs=}, {spi_tx=}, {spi_rx=}\n")
 
         except KeyboardInterrupt:
             print("SpiServer: SIGINT")
