@@ -52,9 +52,7 @@ class SpiServer:
             with server_to_client_pipe:
                 with server_read_pipe_end:
                     with server_write_pipe_end:
-                        print("SpiServer: running")
                         self._spi_master.init()
-                        print("SpiServer: SpiMaster initialized")
                         return self.run()
 
     def transfer(self, cs: int, buf: bytearray) -> bytearray:
