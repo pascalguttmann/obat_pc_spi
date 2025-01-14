@@ -16,13 +16,22 @@ class Ads866xSingleTransferOperation(SingleTransferOperation):
 
     def __init__(
         self,
-        op: bitarray = bitarray(reverse_string("00000")),
-        byte_selector: bitarray = bitarray(reverse_string("00")),
-        addr: bitarray = bitarray(reverse_string("0 00000000")),
-        data: bitarray = bitarray(reverse_string("00000000 00000000")),
+        op: bitarray | None = None,
+        byte_selector: bitarray | None = None,
+        addr: bitarray | None = None,
+        data: bitarray | None = None,
         response: Optional[bitarray] = None,
         response_required: bool = True,
     ):
+        if not op:
+            op = bitarray(reverse_string("00000"))
+        if not byte_selector:
+            byte_selector = bitarray(reverse_string("00"))
+        if not addr:
+            addr = bitarray(reverse_string("0 00000000"))
+        if not data:
+            data = bitarray(reverse_string("00000000 00000000"))
+
         super().__init__(
             command=concat_bitarray(
                 self.check_data(data),
