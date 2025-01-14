@@ -4,6 +4,7 @@ import time
 import threading
 from bitarray import bitarray
 
+from spi_elements.spi_operation_request_iterator import SingleTransferOperationRequest
 from util import reverse_string
 from spi_client_server.spi_driver_ipc import (
     b64_client_ipc as ipc,
@@ -31,15 +32,18 @@ class SpiClient:
         if len(spi_channels) < 1:
             raise ValueError("At least one SpiChannel must be specified.")
         else:
-            self._spi_channels = spi_channels
+            self._spi_channels = list(enumerate(spi_channels))
             self._spi_channel_threads = [
                 self._create_cyclic_locking_thread(
-                    lambda: self._transfer_spi_channel(spi_channel),
+                    lambda: self._transfer_spi_channel(spi_channel, ch_id),
                     spi_channel.transfer_interval,
                 )
-                for spi_channel in self._spi_channels
+                for (ch_id, spi_channel) in self._spi_channels
             ]
             self._spi_channel_threads_run_flag = False
+            self._spi_channels_delay_buffer: List[
+                SingleTransferOperationRequest | None
+            ] = [None] * len(self._spi_channels)
         self._spi_server = spi_server
         self._spi_server.start_server_process()
         client_write_pipe_end.open()
@@ -85,22 +89,28 @@ class SpiClient:
     def _read_from_spi_server(self) -> bytearray:
         return unpack_server_response(ipc.read())
 
-    def _transfer_spi_channel(self, spi_channel: SpiChannel) -> None:
-        op_req = next(spi_channel.spi_operation_request_iterator)
-        tx_bytearray = bytearray(op_req.operation.get_command()[::-1].tobytes())
+    def _transfer_spi_channel(self, spi_channel: SpiChannel, ch_id: int) -> None:
+        new_op_req = next(spi_channel.spi_operation_request_iterator)
+        tx_bytearray = bytearray(new_op_req.operation.get_command()[::-1].tobytes())
 
         self._write_to_spi_server(spi_channel.cs, tx_bytearray)
         rx_bytearray = self._read_from_spi_server()
 
-        if op_req.operation.get_response_required():
-            rsp = bitarray(
-                reverse_string("".join(format(byte, "08b") for byte in rx_bytearray))
-            )
-            op_req.operation.set_response(rsp)
-        else:
-            _ = rx_bytearray
+        old_op_req = self._spi_channels_delay_buffer[ch_id]
+        if old_op_req:
+            if old_op_req.operation.get_response_required():
+                rsp = bitarray(
+                    reverse_string(
+                        "".join(format(byte, "08b") for byte in rx_bytearray)
+                    )
+                )
+                old_op_req.operation.set_response(rsp)
+            else:
+                _ = rx_bytearray
 
-        if op_req.callback:
-            op_req.callback(op_req.operation.get_parsed_response())
+            if old_op_req.callback:
+                old_op_req.callback(old_op_req.operation.get_parsed_response())
+
+        self._spi_channels_delay_buffer[ch_id] = new_op_req
 
         return
