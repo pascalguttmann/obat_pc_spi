@@ -170,9 +170,25 @@ class ReadVoltage(op.Ads866xSingleTransferOperation):
 
         conv_result = rsp[20:32]
         device_addr = rsp[16:20]
-        avdd_alaram = rsp[14:16]
-        input_alarm = rsp[12:14]
-        input_range = rsp[8:12]
+
+        # *Contrary* to information specified in the datasheet (version 'REVISED
+        # MARCH 2021') and (version 'DECEMBER 2016') in table 7-6 'Output Data
+        # Word With All Data Flags Enabled' the ADC input range is *NOT* in the
+        # Bits[8:11], but in Bits[12:15].
+        # The alarm flags can be disabled and the correct input_range is still
+        # being returned at Bits[12:15].
+        #
+        # This seems to be encountered by others as well, although the
+        # information, that the Table 7-6 was changed in the revisions could
+        # not be proven. ("old" version from www.alldatasheets.com has the same
+        # info.)
+        # https://e2e.ti.com/support/data-converters-group/data-converters/f/data-converters-forum/1115365/ads8661-how-to-read-digital-voltage-by-using-ads8661-raspberry-pi-platform
+        #
+        # avdd_alaram and input_alarm have not been checked explicitly for their order!
+        input_range = rsp[12:16]
+        avdd_alaram = rsp[10:12]
+        input_alarm = rsp[8:12]
+
         parity_bits = rsp[6:8]
         _ = rsp[0:6]
 
