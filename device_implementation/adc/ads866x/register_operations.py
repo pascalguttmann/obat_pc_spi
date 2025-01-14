@@ -152,11 +152,16 @@ class ReadHword(Ads866xSingleTransferOperation):
             raise ValueError(f"ReadHword expected 32-Bit response, but got {rsp=}")
 
         register_data = rsp[16:32]
-        zeros = rsp[0:16]
+
+        # No information in the datasheet are found, that parity is appended
+        # after the ReadHword Frame. But from observation it seems to be
+        # appended. Only checking for last 14-Bits. (Parity is unchecked,
+        # because it is undocumented behavior.)
+        zeros = rsp[0:14]
 
         if any(zeros):
             raise ValueError(
-                f"ReadHword expected 16-Bit trailing zeros in response, but got {rsp=}"
+                f"ReadHword expected 14-Bit trailing zeros in response, but got {rsp=}"
             )
 
         return register_data
