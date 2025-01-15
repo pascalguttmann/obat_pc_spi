@@ -17,6 +17,7 @@ class Ad5672SingleTransferOperation(SingleTransferOperation):
         op: bitarray | None = None,
         addr: bitarray | None = None,
         data: bitarray | None = None,
+        data_fill: bitarray | None = None,
         response: Optional[bitarray] = None,
         response_required: bool = True,
     ):
@@ -26,8 +27,8 @@ class Ad5672SingleTransferOperation(SingleTransferOperation):
             addr = bitarray(reverse_string("0000"))
         if not data:
             data = bitarray(reverse_string("0000 00000000"))
-
-        data_fill = bitarray(reverse_string("0000"))
+        if not data_fill:
+            data_fill = bitarray(reverse_string("0000"))
 
         super().__init__(
             command=concat_bitarray(
@@ -155,3 +156,48 @@ class ReadDacRegister(Ad5672SingleTransferOperation):
 
     def _parse_response(self, rsp: bitarray) -> Any:
         return rsp[0:16]
+
+
+class WriteLoadDacMaskRegister(Ad5672SingleTransferOperation):
+    def __init__(self, data: bitarray):
+        """Write the load dac mask register (LDAC mask). Each bit of data[0:8]
+        corresponds to a single dac channel. Setting the corresponding bit to
+        1, will make loading of the value from the _input register_ to the _dac
+        register_ independent of the _LDAC_ hardware pin.
+
+        I.e.:
+        - With LDAC mask == 0: _dac register_ can be updated by software OR hw
+            ldac low signal.
+        - With LDAC mask == 1: _dac register_ can only be updated by software.
+            A hw ldac low signal will be ignored.
+
+        :param data: 12-Bit data of ldac mask register, valid range 0x00 to 0xFF.
+        """
+        super().__init__(
+            op=bitarray(reverse_string("0101")), data=data, response_required=False
+        )
+
+
+class SoftwareReset(Ad5672SingleTransferOperation):
+    def __init__(self):
+        """Perform a software reset of the dac."""
+
+        super().__init__(
+            op=bitarray(reverse_string("0110")),
+            addr=bitarray(reverse_string("0000")),
+            data=bitarray(reverse_string("0001 0010 0011")),
+            data_fill=bitarray(reverse_string("0100")),
+            response_required=False,
+        )
+
+
+class InternalReferenceSetup(Ad5672SingleTransferOperation):
+    def __init__(self):
+        """Sets up the internal reference and amplifier gain to 2 for LFCSP and
+        WLCSP packages. Operation is ignored for TLSSOP packaged ic."""
+
+        super().__init__(
+            op=bitarray(reverse_string("0111")),
+            data_fill=bitarray(reverse_string("0100")),
+            response_required=False,
+        )
