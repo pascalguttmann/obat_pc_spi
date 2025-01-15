@@ -118,7 +118,7 @@ class UpdateDacRegisters(Ad5672SingleTransferOperation):
         )
 
 
-class InputAndDacRegister(Ad5672SingleTransferOperation):
+class WriteInputAndDacRegister(Ad5672SingleTransferOperation):
     def __init__(self, addr: bitarray, data: bitarray):
         """Write data to the input register of the dac channel specified by the
         address and directly update the dac register to output the value.
@@ -140,7 +140,8 @@ class SetDcEnMode(Ad5672SingleTransferOperation):
         """Set daisychain enable mode (DCEN MODE) of Ad5672."""
         super().__init__(
             op=bitarray(reverse_string("1000")),
-            data=bitarray(reverse_string("00000000 00000001")),
+            data=bitarray(reverse_string("00000000 00000000")),
+            data_fill=bitarray(reverse_string("0001")),
             response_required=False,
         )
 
@@ -174,7 +175,10 @@ class WriteLoadDacMaskRegister(Ad5672SingleTransferOperation):
         :param data: 12-Bit data of ldac mask register, valid range 0x00 to 0xFF.
         """
         super().__init__(
-            op=bitarray(reverse_string("0101")), data=data, response_required=False
+            op=bitarray(reverse_string("0101")),
+            data=concat_bitarray(data[4:8], bitarray(reverse_string("00000000"))),
+            data_fill=data[0:4],
+            response_required=False,
         )
 
 
