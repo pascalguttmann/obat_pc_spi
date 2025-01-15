@@ -26,6 +26,6 @@ class DacBase(SpiElementBase):
     @abstractmethod
     def load_all_channels(
         self, callback: Optional[Callable[..., None]] = None, *args, **kwargs
-    ):
+    ) -> AsyncReturn:
         """Update all analog output voltages according to the data written
         prior with .write()."""
