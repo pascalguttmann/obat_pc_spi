@@ -38,6 +38,9 @@ class Initialize(SequenceTransferOperation):
             )
         return None
 
-    # TODO: Add write (to input register)
-    # TODO: Add load (all channels, input register to dac register)
-    # TODO: Add the above structure to dac_base
+
+class LoadAllChannels(op.UpdateDacRegisters):
+    def __init__(self):
+        """Load input register contents to dac registers updating the analog
+        voltage output for all channels."""
+        super().__init__(data=bitarray(reverse_string("000011111111")))

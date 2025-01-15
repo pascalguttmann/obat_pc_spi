@@ -80,10 +80,10 @@ class Ad5672SingleTransferOperation(SingleTransferOperation):
 
 
 class Nop(Ad5672SingleTransferOperation):
-    """No operation"""
+    """No operation (daisy chain)"""
 
     def __init__(self):
-        super().__init__(response_required=False)
+        super().__init__(op=bitarray(reverse_string("1111")), response_required=False)
 
 
 class WriteInputRegister(Ad5672SingleTransferOperation):
