@@ -8,6 +8,13 @@ from spi_elements.spi_operation_request_iterator import (
     SingleTransferOperationRequest,
 )
 
+# Indices of List[SingleTransferOperation] and List[SpiOperationRequestIteratorBase]
+# are ordered as follows:
+#
+# [0]: Least Significant, closest to MOSI
+# ...
+# [n]: Most Significant, closeste to MISO
+
 
 class AggregateOperation(SingleTransferOperation):
     def __init__(self, ops: List[SingleTransferOperation]) -> None:
