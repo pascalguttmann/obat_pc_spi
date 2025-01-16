@@ -33,6 +33,22 @@ class Ad5672(DacBase):
             callback=None,
         )
 
+    def nop(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        """Perform no operation. Can be used to wait for a cycle to
+        synchoronize multiple spi_elements."""
+        ar = AsyncReturn(callback)
+
+        self._put_unprocessed_operation_request(
+            SingleTransferOperationRequest(
+                operation=Nop(),
+                callback=ar.get_callback(),
+            ),
+        )
+        return ar
+
     def initialize(self, callback: Optional[Callable[..., None]] = None) -> AsyncReturn:
         """Dac device must implement the behavior to initialize the hardware
         and enable subsequent calls to other methods of the dac."""
