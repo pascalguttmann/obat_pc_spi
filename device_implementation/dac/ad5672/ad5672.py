@@ -14,6 +14,7 @@ from device_implementation.dac.ad5672.operations import (
     Nop,
     Initialize,
     WriteInputRegister,
+    WriteInputAndDacRegister,
     LoadAllChannels,
 )
 from spi_elements.async_return import AsyncReturn
@@ -59,6 +60,39 @@ class Ad5672(DacBase):
                 operation=Initialize(),
                 callback=ar.get_callback(),
             )
+        )
+        return ar
+
+    def write_and_load(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+        addr: int | None = None,
+        voltage: float | None = None,
+    ) -> AsyncReturn:
+        """Write the quantized analog voltage to the dac with updating the
+        analog output voltage. (Will not update other channels.)
+
+        :param addr: address of the dac channel. Must be in the interval [0, 7].
+        :param voltage: the voltage that should be set at the channel.
+        Constrained to the interval [0V, 5V]. The actual voltage is quantized
+        and floored to the next quantization step resulting from the resolution
+        of the dac."""
+        if not addr:
+            raise ValueError("Address must not be None.")
+        if not voltage:
+            raise ValueError("Voltage must not be None.")
+        _ = self._check_addr(addr)
+
+        ar = AsyncReturn(callback)
+
+        self._put_unprocessed_operation_request(
+            SingleTransferOperationRequest(
+                operation=WriteInputAndDacRegister(
+                    addr=uint_to_bitarray(addr, 4),
+                    data=uint_to_bitarray(self._voltage_to_dac_code(voltage), 12),
+                ),
+                callback=ar.get_callback(),
+            ),
         )
         return ar
 
