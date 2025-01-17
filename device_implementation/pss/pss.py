@@ -116,6 +116,31 @@ class Pss(AggregateOperationRequestIterator):
         upper_current_limit: float | None = None,
         lower_current_limit: float | None = None,
     ) -> AsyncReturn:
+        """Write a given configuration to the PowerSupplySink.
+        The voltages shall be specified in the interval [0V, 5V].
+        The currents shall be specified in the interval [-20A, +20A]. Positive
+        current flows out of the PowerSupplySink.
+        If a specified value is not in the interval it is clamped to the
+        closest border of the interval.
+
+        :param tracking_mode: PssTrackingMode specifying either
+        - PssTrackingMode.voltage
+            - target_voltage is followed by PowerSupplySink
+            - upper_current_limit limits the maximal current (out) of the PowerSupplySink
+            - lower_current_limit limits the minimal current (out) of the PowerSupplySink
+        - PssTrackingMode.current
+            - target_current is followed by PowerSupplySink
+            - upper_voltage_limit limits the maximal output voltage of the PowerSupplySink
+            - lower_voltage_limit limits the minimal output voltage of the PowerSupplySink
+        :param target_voltage: float specifying the target output voltage in Volts
+        :param target_current: float specifying the target output current in Amperes.
+        :param upper_voltage_limit: float specifying the upper voltage limit during current tracking
+        :param lower_voltage_limit: float specifying the lower voltage limit during current tracking
+        :param upper_current_limit: float specifying the upper current limit during voltage tracking
+        :param lower_current_limit: float specifying the lower current limit during voltage tracking
+        :return: None (in AsyncReturn)
+        """
+        
         if not tracking_mode:
             raise ValueError("tracking_mode must be defined by caller")
         if tracking_mode == PssTrackingMode.voltage:
