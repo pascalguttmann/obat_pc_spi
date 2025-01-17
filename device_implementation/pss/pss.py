@@ -140,7 +140,7 @@ class Pss(AggregateOperationRequestIterator):
         :param lower_current_limit: float specifying the lower current limit during voltage tracking
         :return: None (in AsyncReturn)
         """
-        
+
         if not tracking_mode:
             raise ValueError("tracking_mode must be defined by caller")
         if tracking_mode == PssTrackingMode.voltage:
@@ -235,8 +235,35 @@ class Pss(AggregateOperationRequestIterator):
         self.get_conf_dac().load_all_channels(callback=ar.get_callback())
         return ar
 
-    # TODO: def connect_output()
-    # TODO: def disconnect_output()
+    def output_connect(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        """Connect the output of the PowerSupplySink."""
+        ar = AsyncReturn(callback)
+
+        self.get_conf_dac().write_and_load(
+            callback=ar.get_callback(),
+            addr=Pss.conf_output_addr,
+            voltage=5.0,
+        )
+
+        return ar
+
+    def output_disconnect(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        """Disconnect the output of the PowerSupplySink."""
+        ar = AsyncReturn(callback)
+
+        self.get_conf_dac().write_and_load(
+            callback=ar.get_callback(),
+            addr=Pss.conf_output_addr,
+            voltage=0.0,
+        )
+
+        return ar
 
     def get_conf_dac(self) -> Ad5672:
         return cast(Ad5672, self._operation_request_iterators[0])
