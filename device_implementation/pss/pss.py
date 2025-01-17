@@ -7,7 +7,6 @@ from functools import partial
 from spi_elements.async_return import AsyncReturn
 from spi_elements.aggregate_operation_request_iterator import (
     AggregateOperationRequestIterator,
-    AggregateOperation,
 )
 from device_implementation.dac.ad5672 import Ad5672
 from device_implementation.adc.ads866x import Ads866x, Ads866xInputRange
@@ -69,8 +68,14 @@ class Pss(AggregateOperationRequestIterator):
 
         sub_ar = [
             self.get_conf_dac().initialize(callback=collect_ops_responses),
-            self.get_curr_adc().initialize(callback=collect_ops_responses),
-            self.get_volt_adc().initialize(callback=collect_ops_responses),
+            self.get_curr_adc().initialize(
+                callback=collect_ops_responses,
+                input_range=Ads866xInputRange.UNIPOLAR_5V12,
+            ),
+            self.get_volt_adc().initialize(
+                callback=collect_ops_responses,
+                input_range=Ads866xInputRange.UNIPOLAR_5V12,
+            ),
         ]
         return ar
 
@@ -161,7 +166,6 @@ class Pss(AggregateOperationRequestIterator):
 
         ar = AsyncReturn(callback)
 
-        sub_ar = []
         if tracking_mode == PssTrackingMode.voltage:
             _ = self.get_conf_dac().write(
                 addr=Pss.conf_refselect_addr,
