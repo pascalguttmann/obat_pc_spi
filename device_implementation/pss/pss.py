@@ -19,7 +19,21 @@ from device_implementation.adc.ads866x import Ads866x, Ads866xInputRange
 # spi_operation_request_iterator[2] = voltage adc
 
 
+class PssTrackingMode(Enum):
+    current = 0
+    voltage = 1
+
+
 class Pss(AggregateOperationRequestIterator):
+    conf_output_addr: int = 0
+    conf_refselect_addr: int = 1
+    conf_target_voltage_addr: int = 2
+    conf_target_current_addr: int = 3
+    conf_lower_voltage_limit_addr: int = 4
+    conf_upper_voltage_limit_addr: int = 5
+    conf_lower_current_limit_addr: int = 6
+    conf_upper_current_limit_addr: int = 7
+
     def __init__(self) -> None:
         super().__init__(
             [
@@ -86,7 +100,112 @@ class Pss(AggregateOperationRequestIterator):
         ]
         return ar
 
-    # TODO: def write_config()
+    def write_config(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+        tracking_mode: PssTrackingMode | None = None,
+        target_voltage: float | None = None,
+        target_current: float | None = None,
+        upper_voltage_limit: float | None = None,
+        lower_voltage_limit: float | None = None,
+        upper_current_limit: float | None = None,
+        lower_current_limit: float | None = None,
+    ) -> AsyncReturn:
+        if not tracking_mode:
+            raise ValueError("tracking_mode must be defined by caller")
+        if tracking_mode == PssTrackingMode.voltage:
+            if not target_voltage:
+                raise ValueError(
+                    "target_voltage must be defined by caller for tracking_mode == PssTrackingMode.voltage"
+                )
+            if not upper_voltage_limit:
+                raise ValueError(
+                    "upper_voltage_limit must be defined by caller for tracking_mode == PssTrackingMode.voltage"
+                )
+            if not lower_voltage_limit:
+                raise ValueError(
+                    "lower_voltage_limit must be defined by caller for tracking_mode == PssTrackingMode.voltage"
+                )
+        elif tracking_mode == PssTrackingMode.current:
+            if not target_current:
+                raise ValueError(
+                    "target_current must be defined by caller for tracking_mode == PssTrackingMode.current"
+                )
+            if not upper_current_limit:
+                raise ValueError(
+                    "upper_current_limit must be defined by caller for tracking_mode == PssTrackingMode.current"
+                )
+            if not lower_current_limit:
+                raise ValueError(
+                    "lower_current_limit must be defined by caller for tracking_mode == PssTrackingMode.current"
+                )
+        else:
+            raise RuntimeError(  # pyright: ignore
+                f"PssTrackingMode is unknown: {tracking_mode=}"
+            )
+
+        def clamp(val: float, min_val: float, max_val: float) -> float:
+            return min(max(val, min_val), max_val)
+
+        def conf_voltage_to_adc_voltage(voltage: float) -> float:
+            return clamp(voltage, min_val=0.0, max_val=5.0)
+
+        def conf_current_to_adc_voltage(current: float) -> float:
+            zero_offset_current: float = 25.0
+            min_current: float = -20.0
+            max_current: float = 20.0
+            sensitivity: float = 0.1
+            return (
+                clamp(current, min_current, max_current) + zero_offset_current
+            ) * sensitivity
+
+        ar = AsyncReturn(callback)
+
+        sub_ar = []
+        if tracking_mode == PssTrackingMode.voltage:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_refselect_addr,
+                voltage=0.0,
+            )
+        if tracking_mode == PssTrackingMode.current:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_refselect_addr,
+                voltage=5.0,
+            )
+        if target_voltage:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_target_voltage_addr,
+                voltage=conf_voltage_to_adc_voltage(target_voltage),
+            )
+        if target_current:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_target_current_addr,
+                voltage=conf_current_to_adc_voltage(target_current),
+            )
+        if upper_voltage_limit:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_upper_voltage_limit_addr,
+                voltage=conf_voltage_to_adc_voltage(upper_voltage_limit),
+            )
+        if lower_voltage_limit:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_lower_voltage_limit_addr,
+                voltage=conf_voltage_to_adc_voltage(lower_voltage_limit),
+            )
+        if upper_current_limit:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_upper_current_limit_addr,
+                voltage=conf_current_to_adc_voltage(upper_current_limit),
+            )
+        if lower_current_limit:
+            _ = self.get_conf_dac().write(
+                addr=Pss.conf_lower_current_limit_addr,
+                voltage=conf_current_to_adc_voltage(lower_current_limit),
+            )
+
+        self.get_conf_dac().load_all_channels(callback=ar.get_callback())
+        return ar
+
     # TODO: def connect_output()
     # TODO: def disconnect_output()
 
