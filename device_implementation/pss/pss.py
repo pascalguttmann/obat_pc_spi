@@ -200,6 +200,18 @@ class Pss(AggregateOperationRequestIterator):
                 f"PssTrackingMode is unknown: {tracking_mode=}"
             )
 
+        if upper_voltage_limit and lower_voltage_limit:
+            if upper_voltage_limit < lower_voltage_limit:
+                raise ValueError(
+                    f"Invalid configuration: {upper_voltage_limit=} is smaller than {lower_voltage_limit=}"
+                )
+
+        if upper_current_limit and lower_current_limit:
+            if upper_current_limit < lower_current_limit:
+                raise ValueError(
+                    f"Invalid configuration: {upper_current_limit=} is smaller than {lower_current_limit=}"
+                )
+
         def clamp(val: float, min_val: float, max_val: float) -> float:
             return min(max(val, min_val), max_val)
 
