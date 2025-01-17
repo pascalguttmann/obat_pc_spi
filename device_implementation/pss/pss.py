@@ -42,6 +42,32 @@ class Pss(AggregateOperationRequestIterator):
             ]
         )
 
+    def nop(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        """Perform no operation. Can be used to wait for a cycle to
+        synchoronize multiple spi_elements."""
+        ar = AsyncReturn(callback)
+        sequence_callback = ar.get_callback()
+
+        responses = []
+
+        def collect_ops_responses(response: Any):
+            responses.append(response)
+            if len(responses) == len(sub_ar) and sequence_callback:
+                sequence_return = None
+                sequence_callback(sequence_return)
+            return None
+
+        sub_ar = [
+            self.get_conf_dac().nop(callback=collect_ops_responses),
+            self.get_curr_adc().nop(callback=collect_ops_responses),
+            self.get_volt_adc().nop(callback=collect_ops_responses),
+        ]
+
+        return ar
+
     def initialize(
         self,
         callback: Optional[Callable[..., None]] = None,
