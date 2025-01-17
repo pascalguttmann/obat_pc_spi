@@ -81,17 +81,7 @@ class Ad5672(DacBase):
             raise ValueError("Address must not be None.")
         if not voltage:
             raise ValueError("Voltage must not be None.")
-        if addr < 0 or addr > 7:
-            raise ValueError(
-                f"Addrress must be in the interval [0, 7], but is: {addr=}"
-            )
-
-        def clamp(val: int, min_val: int, max_val: int) -> int:
-            return min(max(val, min_val), max_val)
-
-        resolution: int = 2**12
-        n_max: int = resolution - 1
-        n: int = clamp(floor(n_max * voltage / 5.0), 0, n_max)
+        _ = self._check_addr(addr)
 
         ar = AsyncReturn(callback)
 
@@ -99,7 +89,7 @@ class Ad5672(DacBase):
             SingleTransferOperationRequest(
                 operation=WriteInputRegister(
                     addr=uint_to_bitarray(addr, 4),
-                    data=uint_to_bitarray(n, 12),
+                    data=uint_to_bitarray(self._voltage_to_dac_code(voltage), 12),
                 ),
                 callback=ar.get_callback(),
             ),
@@ -120,3 +110,19 @@ class Ad5672(DacBase):
             ),
         )
         return ar
+
+    def _voltage_to_dac_code(self, voltage: float) -> int:
+        def clamp(val: int, min_val: int, max_val: int) -> int:
+            return min(max(val, min_val), max_val)
+
+        resolution: int = 2**12
+        n_max: int = resolution - 1
+        n: int = clamp(floor(n_max * voltage / 5.0), 0, n_max)
+        return n
+
+    def _check_addr(self, addr: int):
+        if addr < 0 or addr > 7:
+            raise ValueError(
+                f"Addrress must be in the interval [0, 7], but is: {addr=}"
+            )
+        return addr
