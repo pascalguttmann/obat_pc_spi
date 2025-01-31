@@ -1,6 +1,6 @@
 import unittest
 from bitarray import bitarray
-from typing import Callable, cast, List, Optional
+from typing import Any, Callable, cast, List, Optional
 
 from util import reverse_string
 from spi_operation import SingleTransferOperation
@@ -49,6 +49,21 @@ class DemoAdc(SpiElementBase):
 
         return ar
 
+    def nop(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        ar = AsyncReturn(callback)
+
+        self._put_unprocessed_operation_request(
+            SingleTransferOperationRequest(
+                operation=DemoAdcNop(),
+                callback=ar.get_callback(),
+            ),
+        )
+
+        return ar
+
 
 class AdcChain(AggregateOperationRequestIterator):
     def __init__(self, adcs: List[DemoAdc]):
@@ -77,6 +92,29 @@ class AdcChain(AggregateOperationRequestIterator):
                 id, set_async_return_after_last_sub_operation
             )
             for op_req_it in self._operation_request_iterators
+        ]
+
+        return ar
+
+    def nop(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        ar = AsyncReturn(callback)
+        sequence_callback = ar.get_callback()
+
+        responses = []
+
+        def collect_ops_responses(response: Any):
+            responses.append(response)
+            if len(responses) == len(sub_ar) and sequence_callback:
+                sequence_return = None
+                sequence_callback(sequence_return)
+            return None
+
+        sub_ar = [
+            adc.nop(callback=collect_ops_responses)
+            for adc in super()._operation_request_iterators
         ]
 
         return ar

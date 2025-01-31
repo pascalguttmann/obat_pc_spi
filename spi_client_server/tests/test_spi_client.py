@@ -2,13 +2,14 @@ import unittest
 import time
 
 from bitarray import bitarray
-from typing import Any
+from typing import Any, Callable, Optional
 
 from util import reverse_string
 from spi_client_server.spi_client import SpiClient, SpiChannel
 from spi_client_server.spi_server import SpiServer
 from spi_master.virtual.virtual import Virtual
 from spi_elements.spi_element_base import SpiElementBase, SingleTransferOperationRequest
+from spi_elements.async_return import AsyncReturn
 from spi_operation import SingleTransferOperation
 
 
@@ -30,6 +31,21 @@ class TestSpiElement(SpiElementBase):
             operation=TestSingleTransferOperation(),
             callback=myCallback,
         )
+
+    def nop(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        ar = AsyncReturn(callback)
+
+        self._put_unprocessed_operation_request(
+            SingleTransferOperationRequest(
+                operation=TestSingleTransferOperation(),
+                callback=ar.get_callback(),
+            ),
+        )
+
+        return ar
 
 
 def myCallback(*args) -> None:

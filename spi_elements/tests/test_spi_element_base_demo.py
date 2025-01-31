@@ -67,6 +67,21 @@ class DemoAdc(SpiElementBase):
 
         return ar
 
+    def nop(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        ar = AsyncReturn(callback)
+
+        self._put_unprocessed_operation_request(
+            SingleTransferOperationRequest(
+                operation=DemoAdcNop(),
+                callback=ar.get_callback(),
+            ),
+        )
+
+        return ar
+
 
 class AdcChain(SpiOperationRequestIteratorBase):
     def __init__(self, adc0: DemoAdc, adc1: DemoAdc):
@@ -118,6 +133,29 @@ class AdcChain(SpiOperationRequestIteratorBase):
 
         aret_0 = self._adc0.read_channel(id, set_async_return_after_last_sub_operation)
         aret_1 = self._adc1.read_channel(id, set_async_return_after_last_sub_operation)
+
+        return ar
+
+    def nop(
+        self,
+        callback: Optional[Callable[..., None]] = None,
+    ) -> AsyncReturn:
+        ar = AsyncReturn(callback)
+        sequence_callback = ar.get_callback()
+
+        responses = []
+
+        def collect_ops_responses(response: Any):
+            responses.append(response)
+            if len(responses) == len(sub_ar) and sequence_callback:
+                sequence_return = None
+                sequence_callback(sequence_return)
+            return None
+
+        sub_ar = [
+            adc.nop(callback=collect_ops_responses)
+            for adc in super()._operation_request_iterators
+        ]
 
         return ar
 
