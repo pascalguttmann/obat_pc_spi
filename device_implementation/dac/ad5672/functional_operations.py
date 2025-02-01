@@ -14,14 +14,13 @@ class Initialize(SequenceTransferOperation):
         """Initialize the dac for operation in daisychain with 0V to 5V output range."""
         ops = []
 
+        ops.append(op.SoftwareReset())
+        ops.append(op.SetDcEnMode())
         ops.append(
-            [
-                op.SoftwareReset(),
-                op.SetDcEnMode(),
-                op.WriteLoadDacMaskRegister(data=bitarray(reverse_string("11111111"))),
-                op.InternalReferenceSetup(),
-            ]
+            op.WriteLoadDacMaskRegister(data=bitarray(reverse_string("11111111")))
         )
+        ops.append(op.InternalReferenceSetup())
+
         super().__init__(ops)
 
     def _parse_response(self, operations_rsp: List[Any]) -> Any:
