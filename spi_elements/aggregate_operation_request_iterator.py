@@ -25,7 +25,7 @@ class AggregateOperation(SingleTransferOperation):
     def _parse_response(self, rsp: bitarray) -> Any:
         bitlens = [op.get_bitlength() for op in self._ops]
         offsets = list(accumulate(bitlens, initial=0))
-        return (
+        return tuple(
             rsp[offset : offset + bitlen] for offset, bitlen in zip(offsets, bitlens)
         )
 
@@ -44,7 +44,7 @@ class AggregateOperationRequestIterator(SpiOperationRequestIteratorBase):
             next(op_req_it) for op_req_it in self._operation_request_iterators
         ]
 
-        def process_sub_operation_requests(*args) -> None:
+        def process_sub_operation_requests(args) -> None:
             for op_req, response in zip(operation_requests, args):
                 if op_req.operation.get_response_required():
                     op_req.operation.set_response(response)
