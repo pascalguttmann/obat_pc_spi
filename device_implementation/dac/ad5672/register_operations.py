@@ -140,7 +140,7 @@ class SetDcEnMode(Ad5672SingleTransferOperation):
         """Set daisychain enable mode (DCEN MODE) of Ad5672."""
         super().__init__(
             op=bitarray(reverse_string("1000")),
-            data=bitarray(reverse_string("00000000 00000000")),
+            data=bitarray(reverse_string("0000 0000 0000")),
             data_fill=bitarray(reverse_string("0001")),
             response_required=False,
         )
