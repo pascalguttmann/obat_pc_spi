@@ -106,14 +106,15 @@ class UpdateDacRegisters(Ad5672SingleTransferOperation):
     def __init__(self, data: bitarray):
         """Update the dac register with contents of input register for the dac
         channel(s) specified by the bits data[0:8]. Setting a bit in data[0:8]
-        selects the dac channel to be updated. Bits data[8:12] are ignored.
+        selects the dac channel to be updated.
 
-        :param data: 12-bit data
+        :param data: 8-bit data
         """
 
         super().__init__(
             op=bitarray(reverse_string("0010")),
-            data=data,
+            data=concat_bitarray(data[4:8], bitarray(reverse_string("00000000"))),
+            data_fill=data[0:4],
             response_required=False,
         )
 
@@ -172,7 +173,7 @@ class WriteLoadDacMaskRegister(Ad5672SingleTransferOperation):
         - With LDAC mask == 1: _dac register_ can only be updated by software.
             A hw ldac low signal will be ignored.
 
-        :param data: 12-Bit data of ldac mask register, valid range 0x00 to 0xFF.
+        :param data: 8-Bit data of ldac mask register, valid range 0x00 to 0xFF.
         """
         super().__init__(
             op=bitarray(reverse_string("0101")),

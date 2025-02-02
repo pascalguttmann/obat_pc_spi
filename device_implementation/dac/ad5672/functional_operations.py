@@ -42,4 +42,4 @@ class LoadAllChannels(op.UpdateDacRegisters):
     def __init__(self):
         """Load input register contents to dac registers updating the analog
         voltage output for all channels."""
-        super().__init__(data=bitarray(reverse_string("000011111111")))
+        super().__init__(data=bitarray(reverse_string("11111111")))
