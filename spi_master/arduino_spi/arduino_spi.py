@@ -18,7 +18,7 @@ class ArduinoSpi(SpiMasterBase):
         """
         if port is None:
             port = self._discover_arduino_port()
-        self._comport = serial.Serial(port=port, baudrate=115200, timeout=1)
+        self._port = port
 
     def _discover_arduino_port(self) -> str:
         arduino_ports = [
@@ -37,6 +37,7 @@ class ArduinoSpi(SpiMasterBase):
 
     def init(self) -> None:
         """Initializes the spi master"""
+        self._comport = serial.Serial(port=self._port, baudrate=115200, timeout=1)
         time.sleep(2.0)  # wait for arduino boot
         return
 
