@@ -22,7 +22,7 @@ if __name__ == "__main__":
         unpack_server_response,
     )
     from spi_client_server.spi_server import SpiServer
-    from spi_master.ch341.ch341 import CH341
+    from spi_master.arduino_spi.arduino_spi import ArduinoSpi
 
     def hex_string_to_bytearray(hex_string):
         if hex_string.startswith("0x"):
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
         return bytearray.fromhex(hex_string)
 
-    with SpiServer(CH341()) as spi_server:
+    with SpiServer(ArduinoSpi()) as spi_server:
         with client_write_pipe_end:
             with client_read_pipe_end:
 
