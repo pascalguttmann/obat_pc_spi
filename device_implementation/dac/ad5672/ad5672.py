@@ -77,9 +77,9 @@ class Ad5672(DacBase):
         Constrained to the interval [0V, 5V]. The actual voltage is quantized
         and floored to the next quantization step resulting from the resolution
         of the dac."""
-        if not addr:
+        if addr is None:
             raise ValueError("Address must not be None.")
-        if not voltage:
+        if voltage is None:
             raise ValueError("Voltage must not be None.")
         _ = self._check_addr(addr)
 
