@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable, List, Sequence, Optional
 import time
 import threading
 from bitarray import bitarray
@@ -22,6 +22,7 @@ class SpiChannel:
     spi_operation_request_iterator: SpiOperationRequestIteratorBase
     transfer_interval: float
     cs: int
+    pre_transfer_channel_initialization: Optional[Sequence[bitarray]] = None
 
 
 class SpiClient:
@@ -48,6 +49,10 @@ class SpiClient:
         self._spi_server.start_server_process()
         client_write_pipe_end.open()
         client_read_pipe_end.open()
+
+        for ch in spi_channels:
+            if ch.pre_transfer_channel_initialization is not None:
+                self._initialize_spi_channel(ch)
 
     def __del__(self):
         self._spi_server.stop_server_process()
@@ -91,22 +96,15 @@ class SpiClient:
 
     def _transfer_spi_channel(self, spi_channel: SpiChannel, ch_id: int) -> None:
         new_op_req = next(spi_channel.spi_operation_request_iterator)
-        tx_bytearray = bytearray(new_op_req.operation.get_command()[::-1].tobytes())
 
-        self._write_to_spi_server(spi_channel.cs, tx_bytearray)
-        rx_bytearray = self._read_from_spi_server()
+        rx = self._transfer_spi_data(spi_channel.cs, new_op_req.operation.get_command())
 
         old_op_req = self._spi_channels_delay_buffer[ch_id]
         if old_op_req:
             if old_op_req.operation.get_response_required():
-                rsp = bitarray(
-                    reverse_string(
-                        "".join(format(byte, "08b") for byte in rx_bytearray)
-                    )
-                )
-                old_op_req.operation.set_response(rsp)
+                old_op_req.operation.set_response(rx)
             else:
-                _ = rx_bytearray
+                _ = rx
 
             if old_op_req.callback:
                 old_op_req.callback(old_op_req.operation.get_parsed_response())
@@ -114,3 +112,19 @@ class SpiClient:
         self._spi_channels_delay_buffer[ch_id] = new_op_req
 
         return
+
+    def _transfer_spi_data(self, cs: int, data: bitarray) -> bitarray:
+        tx: bytearray = bytearray(data[::-1].tobytes())
+        self._write_to_spi_server(cs, tx)
+
+        rx: bytearray = self._read_from_spi_server()
+        return bitarray(reverse_string("".join(format(byte, "08b") for byte in rx)))
+
+    def _initialize_spi_channel(self, spi_channel: SpiChannel) -> None:
+        if spi_channel.pre_transfer_channel_initialization is None:
+            raise ValueError(
+                "SpiChannel must have a pre_transfer_channel_initialization for channel initialization."
+            )
+
+        for ba in spi_channel.pre_transfer_channel_initialization:
+            _ = self._transfer_spi_data(spi_channel.cs, ba)
