@@ -18,13 +18,17 @@ if __name__ == "__main__":
     )
 
     device.initialize()
-    read_op = device.read_output()
+    read_volt_adc_voltage_op = device.get_volt_adc().read()
+    read_curr_adc_voltage_op = device.get_curr_adc().read()
 
     client.start_cyclic_spi_channel_transfer()
     print("cyclic spi channel transfer started")
 
-    voltage, current = read_op.get_result_after_wait()
-    print(f"Pss: {voltage=} {current=}")
+    voltage_adc = read_volt_adc_voltage_op.get_result_after_wait()
+    current_adc = read_curr_adc_voltage_op.get_result_after_wait()
+    print(
+        f"Pss:\n\t'Volt Adc' Voltage={voltage_adc:.6f} V\n\t'Curr Adc` Voltage={current_adc:6f} V"
+    )
 
     client.stop_cyclic_spi_channel_transfer()
 
