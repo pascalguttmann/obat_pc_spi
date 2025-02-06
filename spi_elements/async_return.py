@@ -39,5 +39,9 @@ class AsyncReturn:
         else:
             raise RuntimeError("AsyncReturn: Result not available yet.")
 
+    def get_result_after_wait(self) -> Any:
+        self.wait()
+        return self._result
+
     def __repr__(self) -> str:
         return f"AsyncReturn(is_finished={self._callback_finished.is_set()}, result={self._result}, callback={self._callback})"
