@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any, Callable, Optional, cast
 from enum import Enum
 from functools import partial
+
+from bitarray import bitarray
+from util_bitarray import uint_to_bitarray
 
 from spi_elements.async_return import AsyncReturn
 from spi_elements.aggregate_operation_request_iterator import (
@@ -41,6 +45,15 @@ class Pss(AggregateOperationRequestIterator):
                 Ads866x(),
             ]
         )
+
+    def get_pre_transfer_initialization(self) -> Sequence[bitarray]:
+        dac_ad5672r_reset_opcode = 0x601234
+        dac_ad5672r_dcen_opcode = 0x800001
+        dac_ad5672r_word_bitlen = 24
+        return [
+            uint_to_bitarray(dac_ad5672r_reset_opcode, dac_ad5672r_word_bitlen),
+            uint_to_bitarray(dac_ad5672r_dcen_opcode, dac_ad5672r_word_bitlen),
+        ]
 
     def nop(
         self,
