@@ -13,7 +13,7 @@ from spi_elements.aggregate_operation_request_iterator import (
     AggregateOperationRequestIterator,
 )
 from device_implementation.dac.ad5672 import Ad5672
-from device_implementation.adc.ads866x import Ads866x, Ads866xInputRange
+from device_implementation.adc.ads866x import Ads866x, Ads866xInputRange, Ads866xGpoVal
 
 # From PowerSupplySink Schematic 1.0.0:
 #
@@ -36,6 +36,13 @@ class Pss(AggregateOperationRequestIterator):
     conf_upper_voltage_limit_addr: int = 5
     conf_lower_current_limit_addr: int = 6
     conf_upper_current_limit_addr: int = 7
+
+    _pss_min_voltage_set: float = 0.0  # V
+    _pss_max_voltage_set: float = 5.0  # V
+    _pss_zero_offset_current: float = 25.0  # A
+    _pss_min_current_set: float = -20.0  # A
+    _pss_max_current_set: float = 20.0  # A
+    _pss_sensitivity: float = 0.1  # V/A
 
     def __init__(self) -> None:
         super().__init__(
@@ -111,9 +118,17 @@ class Pss(AggregateOperationRequestIterator):
                 callback=collect_ops_responses,
                 input_range=Ads866xInputRange.UNIPOLAR_5V12,
             ),
+            self.get_curr_adc().write_gpo(
+                callback=collect_ops_responses,
+                gpo_val=Ads866xGpoVal.HIGH,
+            ),
             self.get_volt_adc().initialize(
                 callback=collect_ops_responses,
                 input_range=Ads866xInputRange.UNIPOLAR_5V12,
+            ),
+            self.get_volt_adc().write_gpo(
+                callback=collect_ops_responses,
+                gpo_val=Ads866xGpoVal.HIGH,
             ),
         ]
         return ar
@@ -126,6 +141,13 @@ class Pss(AggregateOperationRequestIterator):
 
         :return: tuple of voltage and current. (voltage: float, current: float)
         """
+
+        def adc_voltage_to_conf_voltage(voltage: float) -> float:
+            return voltage
+
+        def adc_voltage_to_conf_current(voltage: float) -> float:
+            return voltage / self._pss_sensitivity - self._pss_zero_offset_current
+
         ar = AsyncReturn(callback)
         sequence_callback = ar.get_callback()
 
@@ -136,7 +158,10 @@ class Pss(AggregateOperationRequestIterator):
             responses[id]["called"] = True
 
             if all([rsp["called"] for rsp in responses]) and sequence_callback:
-                sequence_return = (responses[0]["data"], responses[1]["data"])
+                sequence_return = (
+                    adc_voltage_to_conf_voltage(responses[0]["data"]),
+                    adc_voltage_to_conf_current(responses[1]["data"]),
+                )
                 sequence_callback(sequence_return)
             return None
 
@@ -229,16 +254,17 @@ class Pss(AggregateOperationRequestIterator):
             return min(max(val, min_val), max_val)
 
         def conf_voltage_to_adc_voltage(voltage: float) -> float:
-            return clamp(voltage, min_val=0.0, max_val=5.0)
+            return clamp(
+                voltage,
+                min_val=self._pss_min_voltage_set,
+                max_val=self._pss_max_voltage_set,
+            )
 
         def conf_current_to_adc_voltage(current: float) -> float:
-            zero_offset_current: float = 25.0
-            min_current: float = -20.0
-            max_current: float = 20.0
-            sensitivity: float = 0.1
             return (
-                clamp(current, min_current, max_current) + zero_offset_current
-            ) * sensitivity
+                clamp(current, self._pss_min_current_set, self._pss_max_current_set)
+                + self._pss_zero_offset_current
+            ) * self._pss_sensitivity
 
         ar = AsyncReturn(callback)
 
