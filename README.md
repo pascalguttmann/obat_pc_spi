@@ -5,7 +5,7 @@
 Obat Software Project for the Programmable Controller (PC) to access SPI peripherals.
 
 For information about the usb to spi converters called [`spi_master`] in the
-software please refer to: [`./spi_master/README.md`][./spi_master/README.md].
+software please refer to: [`./spi_master/README.md`](./spi_master/README.md).
 
 [`spi_master`]: ./spi_master/README.md
 
