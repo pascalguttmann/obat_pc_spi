@@ -17,12 +17,12 @@ if __name__ == "__main__":
         ],
     )
 
-    device.initialize()
-    read_volt_adc_voltage_op = device.get_volt_adc().read()
-    read_curr_adc_voltage_op = device.get_curr_adc().read()
-
     client.start_cyclic_spi_channel_transfer()
     print("cyclic spi channel transfer started")
+
+    device.initialize().wait()
+    read_volt_adc_voltage_op = device.get_volt_adc().read()
+    read_curr_adc_voltage_op = device.get_curr_adc().read()
 
     voltage_adc = read_volt_adc_voltage_op.get_result_after_wait()
     current_adc = read_curr_adc_voltage_op.get_result_after_wait()

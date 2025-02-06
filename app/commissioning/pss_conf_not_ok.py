@@ -17,24 +17,23 @@ if __name__ == "__main__":
         ],
     )
 
-    dac = device.get_conf_dac()
-
-    device.initialize()
-    dac.write(callback=None, addr=0, voltage=5.0 * 0xFFF / 0xFFF)
-    dac.write(callback=None, addr=1, voltage=5.0 * 0xFFF / 0xFFF)
-    dac.write(callback=None, addr=2, voltage=5.0 * 0x800 / 0xFFF)
-    dac.write(callback=None, addr=3, voltage=5.0 * 0x800 / 0xFFF)
-    dac.write(callback=None, addr=4, voltage=5.0 * 0x100 / 0xFFF)
-    dac.write(callback=None, addr=5, voltage=5.0 * 0xE00 / 0xFFF)
-    dac.write(callback=None, addr=6, voltage=5.0 * 0xE00 / 0xFFF)
-    dac.write(callback=None, addr=7, voltage=5.0 * 0x100 / 0xFFF)
-
-    load = dac.load_all_channels(callback=None)
-
     client.start_cyclic_spi_channel_transfer()
     print("cyclic spi channel transfer started")
-    load.wait()
+
+    device.initialize().wait()
+
+    device.get_conf_dac().write(callback=None, addr=0, voltage=5.0 * 0xFFF / 0xFFF)
+    device.get_conf_dac().write(callback=None, addr=1, voltage=5.0 * 0xFFF / 0xFFF)
+    device.get_conf_dac().write(callback=None, addr=2, voltage=5.0 * 0x800 / 0xFFF)
+    device.get_conf_dac().write(callback=None, addr=3, voltage=5.0 * 0x800 / 0xFFF)
+    device.get_conf_dac().write(callback=None, addr=4, voltage=5.0 * 0x100 / 0xFFF)
+    device.get_conf_dac().write(callback=None, addr=5, voltage=5.0 * 0xE00 / 0xFFF)
+    device.get_conf_dac().write(callback=None, addr=6, voltage=5.0 * 0xE00 / 0xFFF)
+    device.get_conf_dac().write(callback=None, addr=7, voltage=5.0 * 0x100 / 0xFFF)
+
+    device.get_conf_dac().load_all_channels(callback=None).wait()
     print("dac channels loaded")
+
     client.stop_cyclic_spi_channel_transfer()
 
     del client
