@@ -6,7 +6,7 @@ from enum import Enum
 from functools import partial
 
 from bitarray import bitarray
-from util_bitarray import uint_to_bitarray
+from util.util_bitarray import uint_to_bitarray
 
 from spi_elements.async_return import AsyncReturn
 from spi_elements.aggregate_operation_request_iterator import (
@@ -129,19 +129,19 @@ class Pss(AggregateOperationRequestIterator):
         ar = AsyncReturn(callback)
         sequence_callback = ar.get_callback()
 
-        responses = [None, None]
+        responses = [{"data": None, "called": False}, {"data": None, "called": False}]
 
-        def collect_ops_responses(id: int, response: Any):
-            responses[id] = response
-            if len(responses) == len(sub_ar) and sequence_callback:
-                sequence_return = (responses[0], response[1])
+        def collect_ops_responses(response: Any, id: int):
+            responses[id]["data"] = response
+            responses[id]["called"] = True
+
+            if all([rsp["called"] for rsp in responses]) and sequence_callback:
+                sequence_return = (responses[0]["data"], responses[1]["data"])
                 sequence_callback(sequence_return)
             return None
 
-        sub_ar = [
-            self.get_volt_adc().read(callback=partial(collect_ops_responses, id=0)),
-            self.get_curr_adc().read(callback=partial(collect_ops_responses, id=1)),
-        ]
+        self.get_volt_adc().read(callback=partial(collect_ops_responses, id=0))
+        self.get_curr_adc().read(callback=partial(collect_ops_responses, id=1))
         return ar
 
     def write_config(
