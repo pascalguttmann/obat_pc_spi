@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     device.initialize()
     dac.write(callback=None, addr=0, voltage=5.0 * 0xFFF / 0xFFF)
-    dac.write(callback=None, addr=1, voltage=5.0 * 0x000 / 0xFFF)
+    dac.write(callback=None, addr=1, voltage=5.0 * 0xFFF / 0xFFF)
     dac.write(callback=None, addr=2, voltage=5.0 * 0x800 / 0xFFF)
     dac.write(callback=None, addr=3, voltage=5.0 * 0x800 / 0xFFF)
     dac.write(callback=None, addr=4, voltage=5.0 * 0x100 / 0xFFF)
