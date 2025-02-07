@@ -208,30 +208,30 @@ class Pss(AggregateOperationRequestIterator):
         if not tracking_mode:
             raise ValueError("tracking_mode must be defined by caller")
         if tracking_mode == PssTrackingMode.voltage:
-            if not target_voltage:
+            if target_voltage is None:
                 raise ValueError(
                     "target_voltage must be defined by caller for tracking_mode == PssTrackingMode.voltage"
                 )
-            if not upper_voltage_limit:
+            if upper_current_limit is None:
                 raise ValueError(
-                    "upper_voltage_limit must be defined by caller for tracking_mode == PssTrackingMode.voltage"
+                    "upper_current_limit must be defined by caller for tracking_mode == PssTrackingMode.voltage"
                 )
-            if not lower_voltage_limit:
+            if lower_current_limit is None:
                 raise ValueError(
-                    "lower_voltage_limit must be defined by caller for tracking_mode == PssTrackingMode.voltage"
+                    "lower_current_limit must be defined by caller for tracking_mode == PssTrackingMode.voltage"
                 )
         elif tracking_mode == PssTrackingMode.current:
-            if not target_current:
+            if target_current is None:
                 raise ValueError(
                     "target_current must be defined by caller for tracking_mode == PssTrackingMode.current"
                 )
-            if not upper_current_limit:
+            if upper_voltage_limit is None:
                 raise ValueError(
-                    "upper_current_limit must be defined by caller for tracking_mode == PssTrackingMode.current"
+                    "upper_voltage_limit must be defined by caller for tracking_mode == PssTrackingMode.current"
                 )
-            if not lower_current_limit:
+            if lower_voltage_limit is None:
                 raise ValueError(
-                    "lower_current_limit must be defined by caller for tracking_mode == PssTrackingMode.current"
+                    "lower_voltage_limit must be defined by caller for tracking_mode == PssTrackingMode.current"
                 )
         else:
             raise RuntimeError(  # pyright: ignore
