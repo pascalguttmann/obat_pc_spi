@@ -130,6 +130,19 @@ class Pss(AggregateOperationRequestIterator):
                 callback=collect_ops_responses,
                 gpo_val=Ads866xGpoVal.HIGH,
             ),
+            self.output_disconnect(
+                callback=collect_ops_responses,
+            ),
+            self.write_config(
+                callback=collect_ops_responses,
+                tracking_mode=PssTrackingMode.voltage,
+                target_voltage=0.0,
+                target_current=0.0,
+                lower_voltage_limit=0.0,
+                upper_voltage_limit=5.0,
+                lower_current_limit=-20.0,
+                upper_current_limit=+20.0,
+            ),
         ]
         return ar
 
