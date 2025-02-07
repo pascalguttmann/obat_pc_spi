@@ -34,8 +34,8 @@ if __name__ == "__main__":
     ).wait()
 
     device.output_connect().wait()
-    voltage, current = device.read_output().get_result_after_wait()
     sleep(0.1)
+    voltage, current = device.read_output().get_result_after_wait()
     input(
         f"Output connected, Pss measured output as: {voltage:.6f} V, {current:.6f} A. Press enter to disconnect and finish."
     )
