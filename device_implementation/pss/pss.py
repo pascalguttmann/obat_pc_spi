@@ -218,7 +218,7 @@ class Pss(AggregateOperationRequestIterator):
         :return: None (in AsyncReturn)
         """
 
-        if not tracking_mode:
+        if tracking_mode is None:
             raise ValueError("tracking_mode must be defined by caller")
         if tracking_mode == PssTrackingMode.voltage:
             if target_voltage is None:
