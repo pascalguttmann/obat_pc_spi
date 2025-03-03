@@ -28,6 +28,17 @@ source export_pythonpath.sh
 
 After this setup you are ready to proceed with the desired use case.
 
+!!! note "Python Venv and Sudo"
+    When running python inside a virtual environment and you require substitute
+    user privileges for the script you can use the `sudo` command. However
+    `sudo` does not preserver the environment variables, especially `PATH`
+    environment variable. This will result in the global python instance
+    instead of the python in the venv to be run. In order to copy the environment to
+    the substitute user and setting `PATH` commands can be run as folllows:
+    ```bash
+    sudo -E env PATH="$PATH" PYTHONPATH="$PYTHONPATH" python3 $PATH_TO_SCRIPT
+    ```
+
 ### Run Unittest
 
 To run the unittests of this software use:
