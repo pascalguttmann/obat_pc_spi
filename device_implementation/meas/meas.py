@@ -24,7 +24,7 @@ from device_implementation.adc.ads866x import Ads866x, Ads866xInputRange, Ads866
 
 class Meas(AggregateOperationRequestIterator):
 
-    _meas_zero_offset_current: float = 25.0 - 0.4  # A
+    _meas_zero_offset_current: float = 25.0 - 0.3725  # A
     _meas_sensitivity: float = 0.1  # V/A
 
     def __init__(self) -> None:
@@ -130,7 +130,7 @@ class Meas(AggregateOperationRequestIterator):
         def adc_temp_voltage_to_input_temperature(voltage: float) -> float:
             # From labeling of LKM Type 102 with Thermocouple Type K:
             # 0V...10V linearly maps to 0°C ... 600°C
-            return voltage / 5.0 * 600
+            return voltage / 10.0 * 600
 
         ar = AsyncReturn(callback)
         sequence_callback = ar.get_callback()
