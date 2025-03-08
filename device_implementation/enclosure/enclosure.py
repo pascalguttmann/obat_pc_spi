@@ -222,4 +222,6 @@ class Enclosure(AggregateOperationRequestIterator):
             voltage=dac_voltage,
         )
 
+        _ = self.get_dac().load_all_channels(callback=ar.get_callback())
+
         return ar
