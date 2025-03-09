@@ -205,12 +205,12 @@ class Enclosure(AggregateOperationRequestIterator):
         elif peltier_polarity == EnclosurePeltierPolarity.cooling:
             _ = self.get_dac().write(
                 addr=Enclosure.dac_polarity_peltier_addr,
-                voltage=0.0,
+                voltage=5.0,
             )
         elif peltier_polarity == EnclosurePeltierPolarity.heating:
             _ = self.get_dac().write(
                 addr=Enclosure.dac_polarity_peltier_addr,
-                voltage=5.0,
+                voltage=0.0,
             )
 
         dutycycle = self._peltier_power_to_dutycycle(peltier_power)
