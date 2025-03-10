@@ -8,7 +8,7 @@ if __name__ == "__main__":
         PssTrackingMode,
     )
 
-    device = Obat().get_pss()
+    device = Obat()
 
     client = SpiClient(
         spi_server=SpiServer(SpiMaster()),
@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     device.initialize().wait()
 
-    device.write_config(
+    device.get_pss().write_config(
         tracking_mode=PssTrackingMode.current,
         target_voltage=2.0,
         target_current=5.0,
@@ -37,13 +37,13 @@ if __name__ == "__main__":
         upper_current_limit=+10.0,
     ).wait()
 
-    device.output_connect().wait()
+    device.get_pss().output_connect().wait()
     sleep(0.1)
-    voltage, current = device.read_output().get_result_after_wait()
+    voltage, current = device.get_pss().read_output().get_result_after_wait()
     input(
         f"Output connected, Pss measured output as: {voltage:.6f} V, {current:.6f} A. Press enter to disconnect and finish."
     )
-    device.output_disconnect().wait()
+    device.get_pss().output_disconnect().wait()
 
     client.stop_cyclic_spi_channel_transfer()
 

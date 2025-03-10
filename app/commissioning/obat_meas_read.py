@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     from time import sleep
 
-    device = Obat().get_meas()
+    device = Obat()
 
     client = SpiClient(
         spi_server=SpiServer(SpiMaster()),
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     try:
         while True:
-            (voltage, current, temperature) = device.read().wait()
+            (voltage, current, temperature) = device.get_meas().read().wait()
 
             print(
                 f"Meas:\tVoltage={voltage:.6f} V\tCurrent={current:6f} A\tTemperature={temperature:6f} °C"

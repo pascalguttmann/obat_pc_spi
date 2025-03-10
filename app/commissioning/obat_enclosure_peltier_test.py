@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     from time import sleep
 
-    device = Obat().get_enclosure()
+    device = Obat()
 
     client = SpiClient(
         spi_server=SpiServer(SpiMaster()),
@@ -26,17 +26,17 @@ if __name__ == "__main__":
     print("initialized.")
 
     input("Press enter to continue... with 36W")
-    device.write_peltier(
+    device.get_enclosure().write_peltier(
         peltier_power=36, peltier_polarity=EnclosurePeltierPolarity.cooling
     ).wait()
 
     input("Press enter to continue... with 144W")
-    device.write_peltier(
+    device.get_enclosure().write_peltier(
         peltier_power=144, peltier_polarity=EnclosurePeltierPolarity.cooling
     ).wait()
 
     input("Press enter to continue... with 0W")
-    device.write_peltier(
+    device.get_enclosure().write_peltier(
         peltier_power=0, peltier_polarity=EnclosurePeltierPolarity.cooling
     ).wait()
 

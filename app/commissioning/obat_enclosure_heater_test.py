@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     from time import sleep
 
-    device = Obat().get_enclosure()
+    device = Obat()
 
     client = SpiClient(
         spi_server=SpiServer(SpiMaster()),
@@ -26,13 +26,13 @@ if __name__ == "__main__":
     print("initialized.")
 
     input("Press enter to continue... with 12.5W")
-    device.write_heater(heater_power=12.5).wait()
+    device.get_enclosure().write_heater(heater_power=12.5).wait()
 
     input("Press enter to continue... with 50.0W")
-    device.write_heater(heater_power=50).wait()
+    device.get_enclosure().write_heater(heater_power=50).wait()
 
     input("Press enter to continue... with 0.0W")
-    device.write_heater(heater_power=0).wait()
+    device.get_enclosure().write_heater(heater_power=0).wait()
 
     client.stop_cyclic_spi_channel_transfer()
 
