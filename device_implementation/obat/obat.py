@@ -70,10 +70,10 @@ class Obat(AggregateOperationRequestIterator):
         return cast(Enclosure, self._operation_request_iterators[0])
 
     def get_pss(self) -> Pss:
-        return cast(Pss, self._operation_request_iterators[0])
+        return cast(Pss, self._operation_request_iterators[1])
 
     def get_meas(self) -> Meas:
-        return cast(Meas, self._operation_request_iterators[0])
+        return cast(Meas, self._operation_request_iterators[2])
 
     def initialize(
         self,
