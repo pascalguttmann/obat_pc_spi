@@ -7,6 +7,7 @@ if __name__ == "__main__":
         PssTrackingMode,
     )
 
+    import keyboard
     from time import sleep
 
     device = Obat()
@@ -41,16 +42,13 @@ if __name__ == "__main__":
     device.get_pss().output_connect().wait()
     sleep(0.1)
 
-    try:
-        while True:
-            (voltage, current, temperature) = device.get_meas().read().wait()
+    while not keyboard.is_pressed("enter"):
+        (voltage, current, temperature) = device.get_meas().read().wait()
 
-            print(
-                f"Meas:\tVoltage={voltage:.6f} V\tCurrent={current:6f} A\tTemperature={temperature:6f} °C"
-            )
-            sleep(0.5)
-    except KeyboardInterrupt:
-        pass
+        print(
+            f"Meas:\tVoltage={voltage:.6f} V\tCurrent={current:6f} A\tTemperature={temperature:6f} °C\tPress enter to stop."
+        )
+        sleep(0.5)
 
     device.get_pss().output_disconnect().wait()
 
