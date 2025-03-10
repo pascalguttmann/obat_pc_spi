@@ -21,13 +21,13 @@ class Ad5672SingleTransferOperation(SingleTransferOperation):
         response: Optional[bitarray] = None,
         response_required: bool = True,
     ):
-        if not op:
+        if op is None:
             op = bitarray(reverse_string("0000"))
-        if not addr:
+        if addr is None:
             addr = bitarray(reverse_string("0000"))
-        if not data:
+        if data is None:
             data = bitarray(reverse_string("0000 00000000"))
-        if not data_fill:
+        if data_fill is None:
             data_fill = bitarray(reverse_string("0000"))
 
         super().__init__(

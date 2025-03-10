@@ -91,7 +91,7 @@ class Ads866x(AdcBase):
         gpo_val: Optional[Ads866xGpoVal] = None,
     ):
         """Write the specified value to the digital general purpose output of the adc."""
-        if not gpo_val:
+        if gpo_val is None:
             raise ValueError("gpo_val must be defined by caller")
 
         ar = AsyncReturn(callback)

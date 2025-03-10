@@ -15,7 +15,7 @@ class SingleTransferOperation(OperationBase):
     ) -> None:
         self._command = command
         self._response_required = response_required
-        if response:
+        if response is not None:
             self.set_response(response)
         else:
             self._response = None
@@ -56,7 +56,7 @@ class SingleTransferOperation(OperationBase):
             return False
 
     def set_response(self, response: bitarray) -> None:
-        if not self._response_required:
+        if not self.get_response_required():
             raise ValueError("operation does not require a response.")
         if len(self._command) != len(response):
             raise ValueError(
@@ -71,7 +71,7 @@ class SingleTransferOperation(OperationBase):
         if not self.get_response_required():
             return None
         rsp = self.get_response()
-        if not rsp:
+        if rsp is None:
             raise ValueError("SingleTransferOperation does not have a response.")
         return self._parse_response(rsp)
 

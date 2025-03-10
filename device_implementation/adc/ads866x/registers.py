@@ -59,7 +59,7 @@ class DeviceIdReg(Ads866xRegister):
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x00, data=data)
 
@@ -83,7 +83,7 @@ class RstPwrctlReg(Ads866xRegister):
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x04, data=data)
 
@@ -137,7 +137,7 @@ class SdiCtlReg(Ads866xRegister):
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x08, data=data)
 
@@ -165,7 +165,7 @@ class SdoCtlReg(Ads866xRegister):
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x0C, data=data)
 
@@ -218,7 +218,7 @@ class DataOutCtlReg(Ads866xRegister):
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x10, data=data)
 
@@ -294,7 +294,7 @@ class RangeSelReg(Ads866xRegister):
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x14, data=data)
 
@@ -339,7 +339,7 @@ class AlarmReg(Ads866xRegister):
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=0x20, data=data)
 
@@ -419,7 +419,7 @@ class AlarmHThReg(Ads866xRegister):  # Alarm hysteresis and high threshold
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=24, data=data)
 
@@ -447,7 +447,7 @@ class AlarmLThReg(Ads866xRegister):  # Alarm low threshold
         self,
         data: Optional[bitarray] = None,
     ):
-        if not data:
+        if data is None:
             data = bitarray("00000000 00000000 00000000 00000000")
         super().__init__(address=28, data=data)
 

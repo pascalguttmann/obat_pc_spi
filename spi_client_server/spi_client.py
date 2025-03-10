@@ -106,7 +106,7 @@ class SpiClient:
             else:
                 _ = rx
 
-            if old_op_req.callback:
+            if old_op_req.callback is not None:
                 old_op_req.callback(old_op_req.operation.get_parsed_response())
 
         self._spi_channels_delay_buffer[ch_id] = new_op_req

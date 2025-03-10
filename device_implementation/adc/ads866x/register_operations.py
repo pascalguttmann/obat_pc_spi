@@ -23,13 +23,13 @@ class Ads866xSingleTransferOperation(SingleTransferOperation):
         response: Optional[bitarray] = None,
         response_required: bool = True,
     ):
-        if not op:
+        if op is None:
             op = bitarray(reverse_string("00000"))
-        if not byte_selector:
+        if byte_selector is None:
             byte_selector = bitarray(reverse_string("00"))
-        if not addr:
+        if addr is None:
             addr = bitarray(reverse_string("0 00000000"))
-        if not data:
+        if data is None:
             data = bitarray(reverse_string("00000000 00000000"))
 
         super().__init__(

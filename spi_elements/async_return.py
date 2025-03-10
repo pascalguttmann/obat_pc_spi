@@ -16,7 +16,7 @@ class AsyncReturn:
                 self._result = args[0]
             else:
                 self._result = args
-            if callback:
+            if callback is not None:
                 _ = callback(*args)
             self._callback_finished.set()
             return None
