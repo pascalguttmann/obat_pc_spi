@@ -38,6 +38,9 @@ After this setup you are ready to proceed with the desired use case.
     ```bash
     sudo -E env PATH="$PATH" PYTHONPATH="$PYTHONPATH" python3 $PATH_TO_SCRIPT
     ```
+    As a convenience the bash script `run_app.sh` is provided, which wraps the
+    call to function and additionally activates the python venv and exports the
+    pythonpath.
 
 ### Run Unittest
 
