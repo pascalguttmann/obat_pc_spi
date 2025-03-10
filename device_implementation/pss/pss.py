@@ -291,32 +291,32 @@ class Pss(AggregateOperationRequestIterator):
                 addr=Pss.conf_refselect_addr,
                 voltage=5.0,
             )
-        if target_voltage:
+        if target_voltage is not None:
             _ = self.get_conf_dac().write(
                 addr=Pss.conf_target_voltage_addr,
                 voltage=conf_voltage_to_adc_voltage(target_voltage),
             )
-        if target_current:
+        if target_current is not None:
             _ = self.get_conf_dac().write(
                 addr=Pss.conf_target_current_addr,
                 voltage=conf_current_to_adc_voltage(target_current),
             )
-        if upper_voltage_limit:
+        if upper_voltage_limit is not None:
             _ = self.get_conf_dac().write(
                 addr=Pss.conf_upper_voltage_limit_addr,
                 voltage=conf_voltage_to_adc_voltage(upper_voltage_limit),
             )
-        if lower_voltage_limit:
+        if lower_voltage_limit is not None:
             _ = self.get_conf_dac().write(
                 addr=Pss.conf_lower_voltage_limit_addr,
                 voltage=conf_voltage_to_adc_voltage(lower_voltage_limit),
             )
-        if upper_current_limit:
+        if upper_current_limit is not None:
             _ = self.get_conf_dac().write(
                 addr=Pss.conf_upper_current_limit_addr,
                 voltage=conf_current_to_adc_voltage(upper_current_limit),
             )
-        if lower_current_limit:
+        if lower_current_limit is not None:
             _ = self.get_conf_dac().write(
                 addr=Pss.conf_lower_current_limit_addr,
                 voltage=conf_current_to_adc_voltage(lower_current_limit),
