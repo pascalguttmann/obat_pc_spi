@@ -24,7 +24,7 @@ from device_implementation.adc.ads866x import Ads866x, Ads866xInputRange, Ads866
 
 class Meas(AggregateOperationRequestIterator):
 
-    _meas_zero_offset_current: float = 25.0 - 0.3725  # A
+    _meas_zero_offset_current: float = 25.0 - 0.3125  # A
     _meas_sensitivity: float = 0.1  # V/A
 
     def __init__(self) -> None:
