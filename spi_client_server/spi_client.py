@@ -76,15 +76,14 @@ class SpiClient:
         self, func: Callable[[], None], interval: float
     ) -> threading.Thread:
         def cyclic_locking_wrapper():
-            last_time = time.perf_counter()
             while self._spi_channel_threads_run_flag:
+                pre_execute_time = time.perf_counter()
                 with self._spi_server_lock:
                     func()
-                current_time = time.perf_counter()
-                sleep_time = interval - (current_time - last_time)
+                post_execute_time = time.perf_counter()
+                sleep_time = interval - (post_execute_time - pre_execute_time)
                 if sleep_time > 0:
                     time.sleep(sleep_time)
-                last_time = current_time
 
         return threading.Thread(target=cyclic_locking_wrapper, daemon=True)
 
