@@ -35,6 +35,7 @@ if __name__ == "__main__":
     voltage, current = device.read_output().wait()
     while current > threshold_current:
         sleep(1.0)
+        voltage, current = device.read_output().wait()
 
     device.output_disconnect().wait()
 
